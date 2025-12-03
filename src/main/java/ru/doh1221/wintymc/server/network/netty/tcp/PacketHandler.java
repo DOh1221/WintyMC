@@ -1,15 +1,15 @@
 package ru.doh1221.wintymc.server.network.netty.tcp;
 
-import ru.doh1221.wintymc.server.packet.*;
-import ru.doh1221.wintymc.server.packet.auth.Packet1Login;
-import ru.doh1221.wintymc.server.packet.auth.Packet2Handshake;
-import ru.doh1221.wintymc.server.packet.game.chat.Packet3Chat;
-import ru.doh1221.wintymc.server.packet.game.entity.Packet7ClickEntity;
-import ru.doh1221.wintymc.server.packet.game.player.world.*;
-import ru.doh1221.wintymc.server.packet.game.world.Packet4WorldTime;
-import ru.doh1221.wintymc.server.packet.general.Packet0KeepAlive;
-import ru.doh1221.wintymc.server.packet.general.Packet255DisconnectKick;
-import ru.doh1221.wintymc.server.packet.status.Packet254GetInfo;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.world.*;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet1Login;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet2Handshake;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.chat.Packet3Chat;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.entity.Packet7ClickEntity;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet14BlockDestroy;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet0KeepAlive;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet255DisconnectKick;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.status.Packet254GetInfo;
 
 public class PacketHandler {
 

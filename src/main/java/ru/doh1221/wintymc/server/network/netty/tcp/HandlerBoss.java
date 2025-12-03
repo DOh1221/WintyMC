@@ -5,13 +5,10 @@ import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.ReadTimeoutException;
-import ru.doh1221.wintymc.server.network.ChannelWrapper;
-import ru.doh1221.wintymc.server.network.ConnectionHandler;
-import ru.doh1221.wintymc.server.network.handler.InitialHandler;
-import ru.doh1221.wintymc.server.packet.Packet;
+import ru.doh1221.wintymc.server.network.netty.tcp.handler.InitialHandler;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -49,7 +46,6 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (handler != null) {
             Packet packet = (Packet) msg;
-            System.out.println(packet.getPacketID());
             packet.handle(handler);
         }
     }

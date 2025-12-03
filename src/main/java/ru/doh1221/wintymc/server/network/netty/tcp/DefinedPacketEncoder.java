@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import ru.doh1221.wintymc.server.packet.Packet;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 @ChannelHandler.Sharable
 public class DefinedPacketEncoder extends MessageToByteEncoder<Packet> {

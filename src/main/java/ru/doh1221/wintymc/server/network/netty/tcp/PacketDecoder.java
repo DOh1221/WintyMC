@@ -3,7 +3,7 @@ package ru.doh1221.wintymc.server.network.netty.tcp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import ru.doh1221.wintymc.server.packet.Packet;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.util.List;
 

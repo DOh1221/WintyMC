@@ -8,17 +8,17 @@ import lombok.Setter;
 @Setter
 public class View2D extends Loc2D {
 
-    private double pitch;
-    private double yaw;
+    private float pitch;
+    private float yaw;
 
-    public View2D(int x, int z, double pitch, double yaw) {
+    public View2D(double x, double z, float pitch, float yaw) {
         this.x = x;
         this.z = z;
         this.pitch = pitch;
         this.yaw = yaw;
     }
 
-    public View3D getView3D(int y) {
+    public View3D getView3D(double y) {
         return new View3D(this.x, y, this.z, this.pitch, this.yaw);
     }
 

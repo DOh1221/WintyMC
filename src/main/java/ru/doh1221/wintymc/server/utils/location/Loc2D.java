@@ -9,8 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Loc2D {
 
-    protected int x;
-    protected int z;
+    protected double x;
+    protected double z;
 
     public Loc2D() { }
 

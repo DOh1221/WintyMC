@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 public class ChannelWrapper {
 

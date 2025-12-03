@@ -3,6 +3,9 @@ package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.world;
 import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
+import ru.doh1221.wintymc.server.utils.location.View3D;
+
 @AllArgsConstructor
 public class Packet13PlayerPositionLook extends Packet10OnGround {
 
@@ -15,6 +18,15 @@ public class Packet13PlayerPositionLook extends Packet10OnGround {
 
     public Packet13PlayerPositionLook() {
 
+    }
+
+    public Packet13PlayerPositionLook(View3D view) {
+        this.x = view.getX();
+        this.y = view.getY();
+        this.stance = 0.75;
+        this.z = view.getZ();
+        this.yaw = view.getYaw();
+        this.pitch = view.getPitch();
     }
 
     @SneakyThrows
@@ -38,6 +50,11 @@ public class Packet13PlayerPositionLook extends Packet10OnGround {
         out.writeFloat(this.yaw);
         out.writeFloat(this.pitch);
         out.writeBoolean(this.onGround);
+    }
+
+    @Override
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
     }
 
     @Override

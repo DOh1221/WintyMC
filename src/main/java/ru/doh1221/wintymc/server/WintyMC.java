@@ -10,9 +10,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
+import ru.doh1221.wintymc.server.game.world.World;
+import ru.doh1221.wintymc.server.game.world.implement.StoneGen;
 import ru.doh1221.wintymc.server.network.netty.PipelineUtils;
-import ru.doh1221.wintymc.server.network.netty.udp.QueryHandler;
 import ru.doh1221.wintymc.server.utils.PropertiesConfig;
+import ru.doh1221.wintymc.server.utils.location.View3D;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -45,6 +47,8 @@ public class WintyMC {
     public boolean enableSTATUS = false;
     public boolean enableRCON = false;
 
+    public World world;
+
     public int queryPort = 25565;
     public int serverPort = 25565;
 
@@ -63,6 +67,7 @@ public class WintyMC {
     public void startServer() throws IOException {
         stillStarting = true;
         LoggingConfig.install();
+        long startTime = System.nanoTime();
         logger.info("Starting Minecraft " + minecraftVersionName + " server (" + softwareName + " ver. " + version + ")");
         logger.info(description);
         if(showOfflineMessage) {
@@ -84,10 +89,11 @@ public class WintyMC {
 
         config = new PropertiesConfig(".", "server.properties", "WintyMC Configuration File");
 
-        config.addDefault("enable-jmx-monitoring", "true");
         config.addDefault("enable-query", "true");
         config.addDefault("enable-status", "true");
         config.addDefault("enable-rcon", "true");
+
+        config.addDefault("level-name", "world");
 
         config.addDefault("region-file-compression", "deflate");
         config.addDefault("query.port", "25565");
@@ -108,7 +114,7 @@ public class WintyMC {
             new Bootstrap()
                     .channel( NioDatagramChannel.class )
                     .group( eventLoopGroup )
-                    .handler( new QueryHandler( getInstance() ) )
+                    .handler( PipelineUtils.QUERY )
                     .localAddress( new InetSocketAddress(config.getString("query-ip"), config.getInt("query.port") ))
                     .bind().addListener( future -> {
                         if (future.isSuccess()) {
@@ -136,8 +142,13 @@ public class WintyMC {
 
         logger.info("Initializing worlds...");
 
+        world = new World(new View3D(0,0, 0, 0.0F, 0.0F), new StoneGen(), 123);
+        world.initialize();
+        world.startTicking();
 
-
+        long endTime = System.nanoTime() - startTime;
+        String s2 = String.format("%.3fs", (double) endTime / 1000000000);
+        getLogger().info("Done (" + s2 + ")! For help, type \"help\" or \"?\"");
     }
 
     public static void main(String[] args) throws IOException {

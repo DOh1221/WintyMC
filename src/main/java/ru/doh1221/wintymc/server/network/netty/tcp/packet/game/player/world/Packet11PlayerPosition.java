@@ -2,6 +2,7 @@ package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.world;
 
 import io.netty.buffer.ByteBuf;
 import lombok.SneakyThrows;
+import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
 
 public class Packet11PlayerPosition extends Packet10OnGround {
 
@@ -26,6 +27,11 @@ public class Packet11PlayerPosition extends Packet10OnGround {
         out.writeDouble(this.y);
         out.writeDouble(this.stance);
         out.writeDouble(this.z);
+    }
+
+    @Override
+    public void handle(PacketHandler handler) {
+        handler.handle(this);
     }
 
     @Override

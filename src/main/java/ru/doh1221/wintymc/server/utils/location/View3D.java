@@ -8,10 +8,10 @@ import lombok.Setter;
 @Setter
 public class View3D extends Loc3D {
 
-    private double pitch;
-    private double yaw;
+    private float pitch;
+    private float yaw;
 
-    public View3D(int x, int y, int z, double pitch, double yaw) {
+    public     View3D(double x, double y, double z, float pitch, float yaw) {
         this.x = x;
         this.y = y;
         this.z = z;

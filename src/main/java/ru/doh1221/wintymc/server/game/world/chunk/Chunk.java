@@ -28,7 +28,7 @@ public class Chunk {
     public static final int TOTAL_BLOCKS = SIZE * SIZE * HEIGHT;
 
     // Block IDs
-    private final byte[] blocks = new byte[TOTAL_BLOCKS];
+    public byte[] blocks = new byte[TOTAL_BLOCKS];
 
     // Metadata (0–15)
     private final NibbleArray metadata = new NibbleArray(TOTAL_BLOCKS);
@@ -57,10 +57,19 @@ public class Chunk {
         }
     }
 
+    public Chunk(int chunkX, int chunkZ, byte[] data) {
+        this.chunkX = chunkX;
+        this.chunkZ = chunkZ;
+
+        for (int i = 0; i < HEIGHT / 16; i++) {
+            entitySlices.add(new ArrayList<>());
+        }
+    }
+
     // --------------------------------
     // Index helper
     // --------------------------------
-    private int index(int x, int y, int z) {
+    public static int index(int x, int y, int z) {
         // X (0–15), Y (0–127), Z (0–15)
         return y + (z * HEIGHT) + (x * HEIGHT * SIZE);
     }
@@ -129,26 +138,6 @@ public class Chunk {
 
     public void removeTileEntity(int x, int y, int z) {
         tileEntities.remove(new Loc3D(x, y, z));
-    }
-
-    // --------------------------------
-    // Entities
-    // --------------------------------
-    public void addEntity(Entity e) {
-        int slice = (int) Math.max(0, Math.min(entitySlices.size() - 1, e.getY() / 16));
-        entitySlices.get(slice).add(e);
-    }
-
-    public void removeEntity(Entity e) {
-        for (List<Entity> slice : entitySlices) {
-            slice.remove(e);
-        }
-    }
-
-    public List<Entity> getEntities() {
-        List<Entity> out = new ArrayList<>();
-        entitySlices.forEach(out::addAll);
-        return out;
     }
 
     // --------------------------------

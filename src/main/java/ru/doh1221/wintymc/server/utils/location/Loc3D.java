@@ -9,9 +9,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Loc3D {
 
-    protected int x;
-    protected int y;
-    protected int z;
+    protected double x;
+    protected double y;
+    protected double z;
 
     public Loc3D() { }
 

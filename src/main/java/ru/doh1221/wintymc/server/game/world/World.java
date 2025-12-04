@@ -14,11 +14,11 @@ import java.util.Random;
 @Getter
 public class World {
 
-    private View3D spawnPosition;
-    private IChunkProvider chunkProvider;
-    private IChunkGenerator worldGenerator;
     public final Random random;
-    private ObjectArrayList<Player> players = new ObjectArrayList<>();
+    private final View3D spawnPosition;
+    private IChunkProvider chunkProvider;
+    private final IChunkGenerator worldGenerator;
+    private final ObjectArrayList<Player> players = new ObjectArrayList<>();
 
 
     public World(View3D view3D, IChunkGenerator worldGenerator, long seed) {

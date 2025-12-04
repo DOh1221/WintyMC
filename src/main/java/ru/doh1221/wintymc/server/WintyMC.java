@@ -10,17 +10,16 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.Getter;
 import ru.doh1221.wintymc.server.configuration.LanguageConfig;
+import ru.doh1221.wintymc.server.configuration.LanguageMapping;
+import ru.doh1221.wintymc.server.configuration.LoggingConfig;
+import ru.doh1221.wintymc.server.configuration.PropertiesConfig;
 import ru.doh1221.wintymc.server.game.chat.ThreadChat;
 import ru.doh1221.wintymc.server.game.world.ThreadWorldTime;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.implement.StoneGen;
 import ru.doh1221.wintymc.server.network.netty.PipelineUtils;
-import ru.doh1221.wintymc.server.configuration.LanguageMapping;
-import ru.doh1221.wintymc.server.configuration.LoggingConfig;
-import ru.doh1221.wintymc.server.configuration.PropertiesConfig;
 import ru.doh1221.wintymc.server.utils.location.View3D;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
@@ -28,40 +27,36 @@ import java.util.logging.Logger;
 
 public class WintyMC {
 
+    private static WintyMC minecraftServer;
     @Getter
     public Logger logger = Logger.getLogger("Minecraft");
-
     //SOFTWARE
     public String minecraftVersionName = "Beta 1.7.3";
     public String softwareName = "WintyMC";
-    public String version = "1.0.1-SNAPSHOT";
 
     //Settings
-
-    PropertiesConfig config = null;
-
-    private EventLoopGroup eventLoopGroup;
+    public String version = "1.0.1-SNAPSHOT";
     public boolean enableSTATUS = false;
     public boolean enableRCON = false;
-
     public ThreadWorldTime timeTicker;
     public ThreadChat chatThread;
-
     public LanguageMapping langMap;
-
     public World world;
-
     public int queryPort = 25565;
     public int serverPort = 25565;
-
     public boolean showOfflineMessage = true;
+    PropertiesConfig config = null;
+    private EventLoopGroup eventLoopGroup;
     @Getter
     private boolean starting = false; // TODO сделаю потом так чтобы при старте сервера, если игрок заходит, его кикало если он ещё полностью не запущен
 
-    private static WintyMC minecraftServer;
-
     public static WintyMC getInstance() {
         return minecraftServer;
+    }
+
+    public static void main(String[] args) {
+        minecraftServer = new WintyMC();
+        minecraftServer.startServer();
     }
 
     public void startServer() {
@@ -71,27 +66,27 @@ public class WintyMC {
         logger.info("Starting Minecraft " + minecraftVersionName + " server (" + softwareName + " ver. " + version + ")");
         logger.info(
                 """
-                WintyMC is open-source project\
-                Help us to make it better - https://github.com/DOh1221/WintyMC\
-                """);
-        if(showOfflineMessage) {
+                        WintyMC is open-source project\
+                        Help us to make it better - https://github.com/DOh1221/WintyMC\
+                        """);
+        if (showOfflineMessage) {
             logger.info(
                     """
-                    
-                    ##########################################\
-                    
-                    # You are running this server in OFFLINE mode\
-                    
-                    # That means, that every player can join without any verification\
-                    
-                    # And it can log into any account on this server\
-                    
-                    # If you don't want to see this message, install \
-                    authorization plugin or turn on online mode!\
-                    
-                    ##########################################\
-                    
-                   """
+                            
+                             ##########################################\
+                            
+                             # You are running this server in OFFLINE mode\
+                            
+                             # That means, that every player can join without any verification\
+                            
+                             # And it can log into any account on this server\
+                            
+                             # If you don't want to see this message, install \
+                             authorization plugin or turn on online mode!\
+                            
+                             ##########################################\
+                            
+                            """
             );
         }
 
@@ -124,18 +119,19 @@ public class WintyMC {
         this.queryPort = config.getInt("query.port");
         this.serverPort = config.getInt("server.port");
 
-        if(config.getBoolean("enable-query")) {
+        if (config.getBoolean("enable-query")) {
             new Bootstrap()
-                    .channel( NioDatagramChannel.class )
-                    .group( eventLoopGroup )
-                    .handler( PipelineUtils.QUERY )
-                    .localAddress( new InetSocketAddress(config.getString("query-ip"), config.getInt("query.port") ))
-                    .bind().addListener( future -> {
+                    .channel(NioDatagramChannel.class)
+                    .group(eventLoopGroup)
+                    .handler(PipelineUtils.QUERY)
+                    .localAddress(new InetSocketAddress(config.getString("query-ip"), config.getInt("query.port")))
+                    .bind().addListener(future -> {
                         if (future.isSuccess()) {
                             getLogger().info("Query started on " + config.getString("query-ip") + ":" + config.getInt("query.port"));
                         } else {
                             getLogger().severe("Failed to bind query port " + config.getString("query-ip") + ":" + config.getInt("query.port"));
-                        } });
+                        }
+                    });
         }
 
         ServerBootstrap bootstrap = new io.netty.bootstrap.ServerBootstrap()
@@ -164,18 +160,13 @@ public class WintyMC {
 
         // TODO Загрузка миров
 
-        world = new World(new View3D(0,0, 0, 0.0F, 0.0F), new StoneGen(), 123);
+        world = new World(new View3D(0, 0, 0, 0.0F, 0.0F), new StoneGen(), 123);
         world.initialize();
         world.startTicking();
 
         long endTime = System.nanoTime() - startTime;
         String s2 = String.format("%.3fs", (double) endTime / 1000000000);
         getLogger().info("Done (" + s2 + ")! For help, type \"help\" or \"?\"");
-    }
-
-    public static void main(String[] args) throws IOException {
-        minecraftServer = new WintyMC();
-        minecraftServer.startServer();
     }
 
 }

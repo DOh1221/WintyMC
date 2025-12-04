@@ -18,7 +18,6 @@ import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet51Map
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet6SpawnPosition;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet255DisconnectKick;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.status.Packet254GetInfo;
-import ru.doh1221.wintymc.server.utils.location.Loc3D;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +26,23 @@ import java.util.UUID;
 public class InitialHandler extends ConnectionHandler {
     // TEST IMPLEMENTATION
     private Player player;
+
+    public static Packet255DisconnectKick createServerListPing(
+            int protocolVersion,
+            String minecraftVersion,
+            String motd,
+            int currentPlayers,
+            int maxPlayers
+    ) {
+        String payload = "§1\0"
+                + protocolVersion + "\0"
+                + minecraftVersion + "\0"
+                + motd + "\0"
+                + currentPlayers + "\0"
+                + maxPlayers;
+
+        return new Packet255DisconnectKick(payload);
+    }
 
     @Override
     public void connected(ChannelWrapper channel) throws Exception {
@@ -51,10 +67,13 @@ public class InitialHandler extends ConnectionHandler {
     @Override
     public void handle(Packet13PlayerPositionLook pos) {
 
-        if(this.player.position == null) {
+        if (this.player.position == null) {
             this.player.position = WintyMC.getInstance().world.getSpawnPosition();
             channel.write(new Packet13PlayerPositionLook(4, 90, 1.0, 4, 1, 1));
         }
+
+        int previousCX = Math.floorDiv((int) pos.x, 16);
+        int previousCZ = Math.floorDiv((int) pos.z, 16);
 
         this.player.position.setX(pos.x);
         this.player.position.setY(pos.y);
@@ -62,9 +81,9 @@ public class InitialHandler extends ConnectionHandler {
 
         int cx = Math.floorDiv((int) pos.x, 16);
         int cz = Math.floorDiv((int) pos.z, 16);
-
+        //if( cx == previousCX && cz == previousCZ) return;
         // Радиус в чанках
-        int radius = 4; // = вокруг 4 чанка
+        int radius = 10; // = вокруг 4 чанка
         // radius = 2 → 25 чанков, как в реальном MC beta
 
         Set<Long> newVisible = new HashSet<>();
@@ -103,13 +122,21 @@ public class InitialHandler extends ConnectionHandler {
 
     @Override
     public void handle(Packet11PlayerPosition pos) {
+        if (this.player.position == null) {
+            this.player.position = WintyMC.getInstance().world.getSpawnPosition();
+            channel.write(new Packet13PlayerPositionLook(4, 90, 1.0, 4, 1, 1));
+        }
+
+        int previousCX = Math.floorDiv((int) pos.x, 16);
+        int previousCZ = Math.floorDiv((int) pos.z, 16);
+
         this.player.position.setX(pos.x);
         this.player.position.setY(pos.y);
         this.player.position.setZ(pos.z);
 
         int cx = Math.floorDiv((int) pos.x, 16);
         int cz = Math.floorDiv((int) pos.z, 16);
-
+        //if( cx == previousCX && cz == previousCZ) return;
         // Радиус в чанках
         int radius = 10; // = вокруг 4 чанка
         // radius = 2 → 25 чанков, как в реальном MC beta
@@ -173,7 +200,6 @@ public class InitialHandler extends ConnectionHandler {
         channel.write(map);
     }
 
-
     @Override
     public void handle(Packet1Login packet1Login) {
         if (packet1Login.protocolVersion > 14) {
@@ -211,24 +237,6 @@ public class InitialHandler extends ConnectionHandler {
         player.uuid = UUID.randomUUID();
         player.health = 0.0;
     }
-
-    public static Packet255DisconnectKick createServerListPing(
-            int protocolVersion,
-            String minecraftVersion,
-            String motd,
-            int currentPlayers,
-            int maxPlayers
-    ) {
-        String payload = "§1\0"
-                + protocolVersion + "\0"
-                + minecraftVersion + "\0"
-                + motd + "\0"
-                + currentPlayers + "\0"
-                + maxPlayers;
-
-        return new Packet255DisconnectKick(payload);
-    }
-
 
     @Override
     public String toString() {

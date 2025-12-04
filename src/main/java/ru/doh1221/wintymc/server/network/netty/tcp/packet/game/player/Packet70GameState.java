@@ -6,6 +6,7 @@ import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
+
 @AllArgsConstructor
 public class Packet70GameState extends Packet {
 

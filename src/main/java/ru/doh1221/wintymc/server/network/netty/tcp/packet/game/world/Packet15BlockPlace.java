@@ -36,7 +36,7 @@ public class Packet15BlockPlace extends Packet {
         out.writeShort(this.itemID);
         out.writeByte(this.amount);
         out.writeShort(this.damage);
-    };
+    }
 
     @Override
     public void handle(PacketHandler handler) {

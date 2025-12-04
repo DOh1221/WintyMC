@@ -54,19 +54,19 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (ctx.channel().isActive()) {
             if (cause instanceof ReadTimeoutException) {
-                Logger.getAnonymousLogger().info( handler + " - read timed out" );
+                Logger.getAnonymousLogger().info(handler + " - read timed out");
                 return;
             } else if (cause instanceof IOException) {
-                Logger.getAnonymousLogger().info(  handler + " - IOException: " + cause.getMessage() );
+                Logger.getAnonymousLogger().info(handler + " - IOException: " + cause.getMessage());
             } else {
-                Logger.getAnonymousLogger().info(  handler + " - encountered exception: " + cause.getMessage()); //cause
+                Logger.getAnonymousLogger().info(handler + " - encountered exception: " + cause.getMessage()); //cause
             }
 
             if (handler != null) {
                 try {
                     handler.exception(cause);
                 } catch (Exception ex) {
-                    Logger.getAnonymousLogger().info(  handler + " - exception processing exception" );
+                    Logger.getAnonymousLogger().info(handler + " - exception processing exception");
                 }
             }
 

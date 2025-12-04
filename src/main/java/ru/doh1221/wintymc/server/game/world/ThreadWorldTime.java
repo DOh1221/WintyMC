@@ -9,23 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ThreadWorldTime extends Thread {
 
-    private volatile boolean running = true;
-
-    /** Все миры */
     private final Map<World, WorldEntry> worlds = new ConcurrentHashMap<>();
-
-    /** Персональные таймеры игроков */
     private final Map<Player, PlayerTimeState> personalTimes = new ConcurrentHashMap<>();
+    private volatile boolean running = true;
 
 
     public ThreadWorldTime() {
         setName("World Timer Thread");
         setDaemon(true);
     }
-
-    // =========================================================================
-    //  РЕГИСТРАЦИЯ МИРОВ
-    // =========================================================================
 
     public void registerWorld(World world,
                               int initialTime,
@@ -43,17 +35,6 @@ public class ThreadWorldTime extends Thread {
         worlds.remove(world);
     }
 
-
-    // =========================================================================
-    //  ПЕРСОНАЛЬНОЕ ВРЕМЯ
-    // =========================================================================
-
-    /**
-     * @param player игрок
-     * @param time начальное время или null чтобы убрать персональное время
-     * @param tickDurationMs длительность тика персонального времени
-     * @param timeStep величина прибавления за тик
-     */
     public void setPersonalTime(Player player,
                                 Integer time,
                                 Long tickDurationMs,
@@ -70,19 +51,12 @@ public class ThreadWorldTime extends Thread {
         personalTimes.put(player, new PlayerTimeState(time, tickDurationMs, timeStep));
     }
 
-
-
-    // =========================================================================
-    //  ПОТОК
-    // =========================================================================
-
     @Override
     public void run() {
 
         while (running) {
             long now = System.currentTimeMillis();
 
-            // ------- Тикаем все миры -------
             for (WorldEntry world : worlds.values()) {
                 if (now - world.lastTick >= world.tickDurationMs) {
                     tickWorld(world);
@@ -90,7 +64,6 @@ public class ThreadWorldTime extends Thread {
                 }
             }
 
-            // ------- Тикаем персональное время игроков -------
             for (PlayerTimeState state : personalTimes.values()) {
                 if (now - state.lastTick >= state.tickDurationMs) {
                     tickPlayerPersonal(state);
@@ -100,36 +73,23 @@ public class ThreadWorldTime extends Thread {
 
             try {
                 Thread.sleep(1);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 
-
-
-    // =========================================================================
-    //    ЛОГИКА ТИКА МИРА
-    // =========================================================================
-
     private void tickWorld(WorldEntry world) {
 
-        // обновляем время мира
         world.time += world.timeStep;
         if (world.time >= 24000) world.time = 0;
 
-        // отправляем игрокам
         for (Player player : world.players) {
 
-            // если у игрока персональный режим — не отправляем мировое время
             if (personalTimes.containsKey(player)) continue;
 
             player.getConnection().write(new Packet4WorldTime(world.time));
         }
     }
-
-
-    // =========================================================================
-    //    ЛОГИКА ТИКА ПЕРСОНАЛЬНОГО ВРЕМЕНИ ИГРОКА
-    // =========================================================================
 
     private void tickPlayerPersonal(PlayerTimeState state) {
 
@@ -139,19 +99,9 @@ public class ThreadWorldTime extends Thread {
         state.player.getConnection().write(new Packet4WorldTime(state.time));
     }
 
-
-
-    // =========================================================================
-    //   ОСТАНОВКА ПОТОКА
-    // =========================================================================
-
     public void stopThread() {
         running = false;
     }
-
-    // =========================================================================
-    //   ВНУТРЕННИЕ КЛАССЫ
-    // =========================================================================
 
     private static class WorldEntry {
         int time;

@@ -18,7 +18,7 @@ public class Packet16HandItemChange extends Packet {
     @Override
     public void writeData(ByteBuf out) throws IOException {
         out.writeShort(this.slot);
-    };
+    }
 
     @Override
     public void handle(PacketHandler handler) {

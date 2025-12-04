@@ -12,14 +12,15 @@ public class Loc2D {
     protected double x;
     protected double z;
 
-    public Loc2D() { }
+    public Loc2D() {
+    }
 
     public Loc3D get3D(int y) {
         return new Loc3D(x, y, z);
     }
 
     public Loc3D get3D() {
-        return new Loc3D(x,0, z);
+        return new Loc3D(x, 0, z);
     }
 
 }

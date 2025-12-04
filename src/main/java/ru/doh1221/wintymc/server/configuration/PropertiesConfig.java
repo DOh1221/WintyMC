@@ -6,13 +6,13 @@ import java.util.Properties;
 public class PropertiesConfig {
 
     private Properties properties;
-    private File File;
+    private final File File;
 
-    private String store;
+    private final String store;
 
     public PropertiesConfig(String folder, String path, String store) {
-        this.File=new File(path);
-        File Folder=new File(folder);
+        this.File = new File(path);
+        File Folder = new File(folder);
 
         try {
             if (!Folder.exists()) {
@@ -65,8 +65,7 @@ public class PropertiesConfig {
         return Long.parseLong(properties.getProperty(string));
     }
 
-    public void saveProperties()
-    {
+    public void saveProperties() {
         try {
             FileOutputStream fr = new FileOutputStream(this.File);
             properties.store(fr, store);
@@ -77,8 +76,7 @@ public class PropertiesConfig {
 
     }
 
-    public void loadProperties()
-    {
+    public void loadProperties() {
         try {
             FileInputStream fi = new FileInputStream(this.File);
             properties.load(fi);

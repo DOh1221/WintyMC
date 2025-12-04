@@ -9,25 +9,23 @@ import java.util.Map;
 
 /**
  * Minimal NBT writer (TAG_Compound based) sufficient for generating Minecraft chunk NBTs.
- *
+ * <p>
  * Writes a named compound as used by chunk files:
  * - Root tag (TAG_Compound) with a name (usually "") and inner structure.
- *
+ * <p>
  * Supported value types:
  * - Byte, Short, Integer, Long, Float, Double
  * - byte[] (TAG_Byte_Array), int[] (TAG_Int_Array), long[] (TAG_Long_Array)
  * - String
  * - List<Object> (homogeneous; element types from above)
  * - Map<String,Object> for nested TAG_Compound
- *
+ * <p>
  * Note: This is not a full NBT implementation (no TAG_End lists, no dynamic conversions) but is enough
  * for producing chunk data compatible with many tools / viewers (old/new Anvil-compatible).
- *
+ * <p>
  * Produces uncompressed NBT bytes (so callers must compress as needed for region files).
  */
 public final class NBTWriter {
-
-    private NBTWriter() {}
 
     private static final byte TAG_END = 0;
     private static final byte TAG_BYTE = 1;
@@ -42,12 +40,14 @@ public final class NBTWriter {
     private static final byte TAG_COMPOUND = 10;
     private static final byte TAG_INT_ARRAY = 11;
     private static final byte TAG_LONG_ARRAY = 12;
+    private NBTWriter() {
+    }
 
     /**
      * Write a named compound (root tag).
      *
      * @param rootName root name (use "" for anonymous root)
-     * @param value map representing compound
+     * @param value    map representing compound
      * @return uncompressed NBT bytes
      */
     public static byte[] writeNamedCompound(String rootName, Map<String, Object> value) throws IOException {
@@ -99,30 +99,26 @@ public final class NBTWriter {
             out.writeByte(TAG_DOUBLE);
             writeString(out, name);
             out.writeDouble((Double) value);
-        } else if (value instanceof byte[]) {
+        } else if (value instanceof byte[] arr) {
             out.writeByte(TAG_BYTE_ARRAY);
             writeString(out, name);
-            byte[] arr = (byte[]) value;
             out.writeInt(arr.length);
             out.write(arr);
-        } else if (value instanceof int[]) {
+        } else if (value instanceof int[] arr) {
             out.writeByte(TAG_INT_ARRAY);
             writeString(out, name);
-            int[] arr = (int[]) value;
             out.writeInt(arr.length);
             for (int v : arr) out.writeInt(v);
-        } else if (value instanceof long[]) {
+        } else if (value instanceof long[] arr) {
             out.writeByte(TAG_LONG_ARRAY);
             writeString(out, name);
-            long[] arr = (long[]) value;
             out.writeInt(arr.length);
             for (long v : arr) out.writeLong(v);
         } else if (value instanceof String) {
             out.writeByte(TAG_STRING);
             writeString(out, name);
             writeString(out, (String) value);
-        } else if (value instanceof List) {
-            List<?> list = (List<?>) value;
+        } else if (value instanceof List<?> list) {
             // empty list defaults to TAG_End as element type 0 which is invalid; prefer TAG_Byte for empty maybe, but we emit TAG_List with TAG_Byte and zero length
             byte elemType = TAG_END;
             if (!list.isEmpty()) {

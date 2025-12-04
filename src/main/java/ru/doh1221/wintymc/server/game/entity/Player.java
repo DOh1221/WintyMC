@@ -2,12 +2,12 @@ package ru.doh1221.wintymc.server.game.entity;
 
 import lombok.Getter;
 import ru.doh1221.wintymc.server.network.netty.tcp.ChannelWrapper;
-import ru.doh1221.wintymc.server.utils.location.Loc3D;
 import ru.doh1221.wintymc.server.utils.location.View3D;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+
 @Getter
 public class Player extends Entity {
 

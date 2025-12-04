@@ -13,7 +13,8 @@ public class Loc3D {
     protected double y;
     protected double z;
 
-    public Loc3D() { }
+    public Loc3D() {
+    }
 
     public Loc2D get2D() {
         return new Loc2D(x, z);

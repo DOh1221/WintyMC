@@ -1,6 +1,8 @@
 package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet1Login;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet2Handshake;
@@ -8,26 +10,24 @@ import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.chat.Packet3Chat;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.entity.Packet5EntityEquipment;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.entity.Packet7ClickEntity;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.*;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.data.Packet8SetHealth;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.world.*;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.*;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.data.Packet8SetHealth;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet0KeepAlive;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet255DisconnectKick;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.PacketFAChannelMessage;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.status.Packet254GetInfo;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class Packet {
-    private static final Map<Class<? extends Packet>, Integer> classToId = new HashMap<>();
-    private static final Map<Integer, Class<? extends Packet>> idToClass = new HashMap<>();
+    public static final int PVN = 14;
+    private static final Object2IntArrayMap<Class<? extends Packet>> classToId = new Object2IntArrayMap<>();
+    private static final Int2ObjectArrayMap<Class<? extends Packet>> idToClass = new Int2ObjectArrayMap<>();
     private static final Set<Integer> serverPackets = new HashSet<>();
     private static final Set<Integer> clientPackets = new HashSet<>();
-    public static final int PVN = 14;
 
     static {
         // AUTH
@@ -79,11 +79,7 @@ public abstract class Packet {
     private final int packetID;
 
     public Packet() {
-        Integer id = classToId.get(this.getClass());
-        if (id == null) {
-            throw new IllegalStateException("Packet class not registered: " + this.getClass());
-        }
-        this.packetID = id;
+        this.packetID = classToId.getInt(this.getClass());
     }
 
     public static void register(int id, boolean isServerPacket, boolean isClientPacket, Class<? extends Packet> clazz) {

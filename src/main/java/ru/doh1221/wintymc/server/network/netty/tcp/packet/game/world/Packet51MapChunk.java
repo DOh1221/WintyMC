@@ -11,6 +11,12 @@ import java.util.zip.Inflater;
 
 public class Packet51MapChunk extends Packet {
 
+    private static final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
+    private static final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
+    private static final int DEFLATE_LEVEL_CHUNKS = 6;
+    private static final int DEFLATE_LEVEL_PARTS = 1;
+    private static final Deflater deflater = new Deflater();
+    private static byte[] deflateBuffer = new byte[CHUNK_SIZE + 100];
     public int a;
     public int b;
     public int c;
@@ -18,13 +24,12 @@ public class Packet51MapChunk extends Packet {
     public int e;
     public int f;
     public byte[] g;
-    public int h; // CraftBukkit - private -> public
-    public byte[] rawData; // CraftBukkit
+    public int h;
+    public byte[] rawData;
 
     public Packet51MapChunk() {
 
     }
-
     public Packet51MapChunk(int i, int j, int k, int l, int i1, int j1, byte[] data) {
         this.a = i;
         this.b = j;
@@ -33,6 +38,33 @@ public class Packet51MapChunk extends Packet {
         this.e = i1;
         this.f = j1;
         this.rawData = data; // CraftBukkit
+    }
+
+    public static void compress(Packet51MapChunk mapChunk) {
+
+        // If 'packet.g' is set then this packet has already been compressed.
+        if (mapChunk.g != null) {
+            return;
+        }
+
+        int dataSize = mapChunk.rawData.length;
+        if (deflateBuffer.length < dataSize + 100) {
+            deflateBuffer = new byte[dataSize + 100];
+        }
+
+        deflater.reset();
+        deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
+        deflater.setInput(mapChunk.rawData);
+        deflater.finish();
+        int size = deflater.deflate(deflateBuffer);
+        if (size == 0) {
+            size = deflater.deflate(deflateBuffer);
+        }
+
+        // copy compressed data to packet
+        mapChunk.g = new byte[size];
+        mapChunk.h = size;
+        System.arraycopy(deflateBuffer, 0, mapChunk.g, 0, size);
     }
 
     public void readData(ByteBuf datainputstream) throws IOException { // CraftBukkit - throws IOEXception
@@ -79,40 +111,5 @@ public class Packet51MapChunk extends Packet {
     @Override
     public int size() {
         return 0;
-    }
-
-    private static final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
-    private static final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
-    private static final int DEFLATE_LEVEL_CHUNKS = 6;
-    private static final int DEFLATE_LEVEL_PARTS = 1;
-
-    private static final Deflater deflater = new Deflater();
-    private static byte[] deflateBuffer = new byte[CHUNK_SIZE + 100];
-
-    public static void compress(Packet51MapChunk mapChunk) {
-
-        // If 'packet.g' is set then this packet has already been compressed.
-        if (mapChunk.g != null) {
-            return;
-        }
-
-        int dataSize = mapChunk.rawData.length;
-        if (deflateBuffer.length < dataSize + 100) {
-            deflateBuffer = new byte[dataSize + 100];
-        }
-
-        deflater.reset();
-        deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
-        deflater.setInput(mapChunk.rawData);
-        deflater.finish();
-        int size = deflater.deflate(deflateBuffer);
-        if (size == 0) {
-            size = deflater.deflate(deflateBuffer);
-        }
-
-        // copy compressed data to packet
-        mapChunk.g = new byte[size];
-        mapChunk.h = size;
-        System.arraycopy(deflateBuffer, 0, mapChunk.g, 0, size);
     }
 }

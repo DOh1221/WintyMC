@@ -10,11 +10,11 @@ import java.util.logging.*;
 
 /**
  * Formatter который печатает строки в формате:
- *   [HH:mm:ss] (loggerName) message
- *
+ * [HH:mm:ss] (loggerName) message
+ * <p>
  * ВАЖНО: вызываетe LoggingConfig.install() как можно раньше в main(),
  * до первого Logger.getLogger(...) вызова.
- *
+ * <p>
  * Поведение:
  * - Если сообщение содержит переносы строк, префикс добавляется перед каждой строкой.
  * - Если есть исключение (throwable), его stacktrace тоже печатается с тем же префиксом на каждой строке.
@@ -32,7 +32,8 @@ public final class LoggingConfig {
             try {
                 root.removeHandler(h);
                 h.close();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
         ConsoleHandler ch = new ConsoleHandler();
@@ -71,7 +72,10 @@ public final class LoggingConfig {
             }
         });
 
-        try { ch.setEncoding("UTF-8"); } catch (Exception ignored) {}
+        try {
+            ch.setEncoding("UTF-8");
+        } catch (Exception ignored) {
+        }
 
         root.addHandler(ch);
         root.setUseParentHandlers(false);

@@ -6,10 +6,10 @@ import io.netty.channel.ChannelException;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import ru.doh1221.wintymc.server.WintyMC;
-import ru.doh1221.wintymc.server.network.netty.tcp.handler.InitialHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.DefinedPacketEncoder;
 import ru.doh1221.wintymc.server.network.netty.tcp.HandlerBoss;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketDecoder;
+import ru.doh1221.wintymc.server.network.netty.tcp.handler.InitialHandler;
 import ru.doh1221.wintymc.server.network.netty.udp.QueryHandler;
 
 import java.util.Random;

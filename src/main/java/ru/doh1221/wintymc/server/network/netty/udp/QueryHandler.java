@@ -7,22 +7,26 @@ import io.netty.channel.AddressedEnvelope;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
+import ru.doh1221.wintymc.server.WintyMC;
+
 import java.net.InetAddress;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ru.doh1221.wintymc.server.WintyMC;
 
 /**
  * UDP Query handler for the server.
- *
+ * <p>
  * Responsibilities are split to improve readability:
  * - validate incoming packet header
  * - dispatch by query type
  * - build responses (short and long)
  * - manage short-lived challenge sessions
- *
+ * <p>
  * The handler is intentionally final and uses explicit dependencies injected via constructor
  * (WintyMC instance and a QueryListener) to make behavior and side-effects visible and testable.
  */
@@ -42,7 +46,7 @@ public final class QueryHandler extends SimpleChannelInboundHandler<DatagramPack
     /**
      * Create a QueryHandler.
      *
-     * @param server   main server singleton (injected rather than fetched statically to ease testing)
+     * @param server main server singleton (injected rather than fetched statically to ease testing)
      */
     public QueryHandler(WintyMC server) {
         this.server = Objects.requireNonNull(server, "server");
@@ -135,7 +139,7 @@ public final class QueryHandler extends SimpleChannelInboundHandler<DatagramPack
         int challengeToken = in.readInt();
 
         QuerySession session = sessions.getIfPresent(senderAddress);
-        if (session == null || session.getToken() != challengeToken) {
+        if (session == null || session.token() != challengeToken) {
             throw new IllegalStateException("No valid session for " + senderAddress);
         }
 
@@ -235,24 +239,9 @@ public final class QueryHandler extends SimpleChannelInboundHandler<DatagramPack
     // -------------------- Small helper types --------------------
 
     /**
-     * Simple immutable session record that stores challenge token and creation time.
-     */
-    private static final class QuerySession {
-        private final int token;
-        private final long createdAt;
-
-        QuerySession(int token, long createdAt) {
-            this.token = token;
-            this.createdAt = createdAt;
-        }
-
-        int getToken() {
-            return token;
-        }
-
-        long getCreatedAt() {
-            return createdAt;
-        }
+         * Simple immutable session record that stores challenge token and creation time.
+         */
+        private record QuerySession(int token, long createdAt) {
     }
 
 }

@@ -2,9 +2,9 @@ package ru.doh1221.wintymc.server.configuration;
 
 public class LanguageConfig implements LanguageMapping {
 
-    private PropertiesConfig configFile;
+    private final PropertiesConfig configFile;
 
-    public LanguageConfig(String  folder, String file, String store) {
+    public LanguageConfig(String folder, String file, String store) {
         this.configFile = new PropertiesConfig(folder, file, store);
         defaults();
     }

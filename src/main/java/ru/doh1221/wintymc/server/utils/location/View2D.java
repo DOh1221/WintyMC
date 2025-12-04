@@ -1,6 +1,5 @@
 package ru.doh1221.wintymc.server.utils.location;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

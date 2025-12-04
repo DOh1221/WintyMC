@@ -1,9 +1,5 @@
 package ru.doh1221.wintymc.server.game.world.chunk;
 
-import ru.doh1221.wintymc.server.utils.location.Loc3D;
-
-import java.util.*;
-
 /**
  * Clean, standalone chunk container.
  * Holds ALL data required by Packet51MapChunk:
@@ -11,12 +7,12 @@ import java.util.*;
  * - metadata (nibble array)
  * - block light (nibble array)
  * - sky light (nibble array)
- *
+ * <p>
  * Also stores:
  * - heightmap
  * - tile entities
  * - entities
- *
+ * <p>
  * No NMS, no lighting engine, no generation logic.
  */
 public class Chunk {
@@ -24,24 +20,18 @@ public class Chunk {
     public static final int SIZE = 16;
     public static final int HEIGHT = 128;
     public static final int TOTAL_BLOCKS = SIZE * SIZE * HEIGHT;
-
-    // Block IDs
-    public byte[] blocks = new byte[TOTAL_BLOCKS];
-
     // Metadata (0–15)
     private final NibbleArray metadata = new NibbleArray(TOTAL_BLOCKS);
-
     // Block light (0–15)
     private final NibbleArray blockLight = new NibbleArray(TOTAL_BLOCKS);
-
     // Sky light (0–15)
     private final NibbleArray skyLight = new NibbleArray(TOTAL_BLOCKS);
-
     // Heightmap (not in Packet51, but useful)
     private final byte[] heightMap = new byte[SIZE * SIZE];
-
     private final int chunkX;
     private final int chunkZ;
+    // Block IDs
+    public byte[] blocks = new byte[TOTAL_BLOCKS];
 
     // private final List<List<Entity>> entitySlices = new ArrayList<>(HEIGHT / 16);
     // private final Map<Loc3D, TileEntity> tileEntities = new HashMap<>();
@@ -146,7 +136,7 @@ public class Chunk {
     /**
      * Формирует payload exactly как в оригинальном Packet51 для полного чанка 16x128x16.
      * Формат: [blocks (TOTAL_BLOCKS bytes)] [metadata (TOTAL_BLOCKS/2 bytes)]
-     *         [blockLight (TOTAL_BLOCKS/2 bytes)] [skyLight (TOTAL_BLOCKS/2 bytes)]
+     * [blockLight (TOTAL_BLOCKS/2 bytes)] [skyLight (TOTAL_BLOCKS/2 bytes)]
      */
     public byte[] toPacketData() {
         // total: TOTAL_BLOCKS + 3 * (TOTAL_BLOCKS / 2) = TOTAL_BLOCKS * 5 / 2
@@ -183,10 +173,20 @@ public class Chunk {
     // Getters
     // --------------------------------
 
-    public int getChunkX() { return chunkX; }
-    public int getChunkZ() { return chunkZ; }
+    public int getChunkX() {
+        return chunkX;
+    }
 
-    public byte[] getBlocksRaw() { return blocks; }
-    public byte[] getHeightMapRaw() { return heightMap; }
+    public int getChunkZ() {
+        return chunkZ;
+    }
+
+    public byte[] getBlocksRaw() {
+        return blocks;
+    }
+
+    public byte[] getHeightMapRaw() {
+        return heightMap;
+    }
     //public Map<Loc3D, TileEntity> getTileEntities() { return tileEntities; }
 }

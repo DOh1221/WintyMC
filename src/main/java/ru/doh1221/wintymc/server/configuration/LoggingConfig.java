@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server;
+package ru.doh1221.wintymc.server.configuration;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

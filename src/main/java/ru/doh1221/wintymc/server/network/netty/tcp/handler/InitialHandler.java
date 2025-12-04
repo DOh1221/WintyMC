@@ -64,7 +64,7 @@ public class InitialHandler extends ConnectionHandler {
         int cz = Math.floorDiv((int) pos.z, 16);
 
         // Радиус в чанках
-        int radius = 1; // = вокруг 4 чанка
+        int radius = 4; // = вокруг 4 чанка
         // radius = 2 → 25 чанков, как в реальном MC beta
 
         Set<Long> newVisible = new HashSet<>();
@@ -111,7 +111,7 @@ public class InitialHandler extends ConnectionHandler {
         int cz = Math.floorDiv((int) pos.z, 16);
 
         // Радиус в чанках
-        int radius = 1; // = вокруг 4 чанка
+        int radius = 10; // = вокруг 4 чанка
         // radius = 2 → 25 чанков, как в реальном MC beta
 
         Set<Long> newVisible = new HashSet<>();
@@ -176,10 +176,16 @@ public class InitialHandler extends ConnectionHandler {
 
     @Override
     public void handle(Packet1Login packet1Login) {
-        if(packet1Login.protocolVersion != 14) {
-            channel.write(new Packet255DisconnectKick("Server is out of date!"));
+        if (packet1Login.protocolVersion > 14) {
+            channel.write(new Packet255DisconnectKick(WintyMC.getInstance().langMap.getTranslation("kick.server.outofdate")));
             channel.close();
+            return;
+        } else if (packet1Login.protocolVersion < 14) {
+            channel.write(new Packet255DisconnectKick(WintyMC.getInstance().langMap.getTranslation("kick.client.outofdate")));
+            channel.close();
+            return;
         }
+
         WintyMC.getInstance().getLogger().info(player.displayname + " joined the server. " + player.uuid);
 
         channel.write(new Packet1Login(player.entityID, "CoolServer", 1851285L, (byte) 0));

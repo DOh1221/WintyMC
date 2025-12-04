@@ -1,7 +1,5 @@
 package ru.doh1221.wintymc.server.game.world.chunk;
 
-import ru.doh1221.wintymc.server.game.world.test.Entity;
-import ru.doh1221.wintymc.server.game.world.test.TileEntity;
 import ru.doh1221.wintymc.server.utils.location.Loc3D;
 
 import java.util.*;
@@ -45,25 +43,25 @@ public class Chunk {
     private final int chunkX;
     private final int chunkZ;
 
-    private final List<List<Entity>> entitySlices = new ArrayList<>(HEIGHT / 16);
-    private final Map<Loc3D, TileEntity> tileEntities = new HashMap<>();
+    // private final List<List<Entity>> entitySlices = new ArrayList<>(HEIGHT / 16);
+    // private final Map<Loc3D, TileEntity> tileEntities = new HashMap<>();
 
     public Chunk(int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
 
-        for (int i = 0; i < HEIGHT / 16; i++) {
-            entitySlices.add(new ArrayList<>());
-        }
+        // for (int i = 0; i < HEIGHT / 16; i++) {
+        //     entitySlices.add(new ArrayList<>());
+        // }
     }
 
     public Chunk(int chunkX, int chunkZ, byte[] data) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
 
-        for (int i = 0; i < HEIGHT / 16; i++) {
-            entitySlices.add(new ArrayList<>());
-        }
+        // for (int i = 0; i < HEIGHT / 16; i++) {
+        //     entitySlices.add(new ArrayList<>());
+        // }
     }
 
     // --------------------------------
@@ -126,19 +124,19 @@ public class Chunk {
     // --------------------------------
     // Tile entities
     // --------------------------------
-    public TileEntity getTileEntity(int x, int y, int z) {
-        return tileEntities.get(new Loc3D(x, y, z));
-    }
+    // public TileEntity getTileEntity(int x, int y, int z) {
+    //     return tileEntities.get(new Loc3D(x, y, z));
+    // }
 
-    public void setTileEntity(int x, int y, int z, TileEntity te) {
-        Loc3D pos = new Loc3D(x, y, z);
-        te.setPosition(pos);
-        tileEntities.put(pos, te);
-    }
+    // public void setTileEntity(int x, int y, int z, TileEntity te) {
+    //     Loc3D pos = new Loc3D(x, y, z);
+    //     te.setPosition(pos);
+    //     tileEntities.put(pos, te);
+    // }
 
-    public void removeTileEntity(int x, int y, int z) {
-        tileEntities.remove(new Loc3D(x, y, z));
-    }
+    // public void removeTileEntity(int x, int y, int z) {
+    //     tileEntities.remove(new Loc3D(x, y, z));
+    // }
 
     // --------------------------------
     // Packet51MapChunk encoder
@@ -190,5 +188,5 @@ public class Chunk {
 
     public byte[] getBlocksRaw() { return blocks; }
     public byte[] getHeightMapRaw() { return heightMap; }
-    public Map<Loc3D, TileEntity> getTileEntities() { return tileEntities; }
+    //public Map<Loc3D, TileEntity> getTileEntities() { return tileEntities; }
 }

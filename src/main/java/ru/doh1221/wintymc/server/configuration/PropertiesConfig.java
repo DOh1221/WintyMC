@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.utils;
+package ru.doh1221.wintymc.server.configuration;
 
 import java.io.*;
 import java.util.Properties;

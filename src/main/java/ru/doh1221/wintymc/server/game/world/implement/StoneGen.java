@@ -1,11 +1,12 @@
 package ru.doh1221.wintymc.server.game.world.implement;
 
-import ru.doh1221.wintymc.server.game.blocks.Block;
-import ru.doh1221.wintymc.server.game.blocks.BlockStone;
+import ru.doh1221.wintymc.server.game.blocks.BlockBase;
+import ru.doh1221.wintymc.server.game.blocks.BlockRegistry;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.chunk.Chunk;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkGenerator;
 
+import java.util.Objects;
 import java.util.Random;
 
 public class StoneGen implements IChunkGenerator {
@@ -18,7 +19,7 @@ public class StoneGen implements IChunkGenerator {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 test[Chunk.index(x, y + 1, z)] = 2;
-                test[Chunk.index(x, y, z)] = (byte) BlockStone.id();
+                test[Chunk.index(x, y, z)] = (byte) Objects.requireNonNull(BlockRegistry.getByBlockName("stone")).getID();
             }
         }
 

@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    application
 }
 
 group = "ru.armlix"
@@ -7,6 +8,10 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+
+application{
+    mainClass.set("ru.doh1221.wintymc.server.WintyMC")
 }
 
 dependencies {
@@ -33,4 +38,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.compileJava {
+    options.encoding = "UTF-8"
 }

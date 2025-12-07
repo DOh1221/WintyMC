@@ -1,7 +1,14 @@
 package ru.doh1221.wintymc.server.game.blocks;
 
-public class BlockStone implements Block {
-    public static int id() {
-        return 1;
+import java.util.Random;
+
+public class BlockStone extends BlockBase{
+    public BlockStone(int id, String name) {
+        super(id, name);
+    }
+
+    @Override
+    public int idDropped(int i, Random random) {
+        return 10;
     }
 }

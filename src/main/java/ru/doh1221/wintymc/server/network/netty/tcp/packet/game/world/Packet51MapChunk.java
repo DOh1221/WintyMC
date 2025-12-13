@@ -30,6 +30,7 @@ public class Packet51MapChunk extends Packet {
     public Packet51MapChunk() {
 
     }
+
     public Packet51MapChunk(int i, int j, int k, int l, int i1, int j1, byte[] data) {
         this.a = i;
         this.b = j;

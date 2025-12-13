@@ -2,8 +2,8 @@ package ru.doh1221.wintymc.server.game.world;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
+import ru.doh1221.wintymc.server.entity.Player;
 import ru.doh1221.wintymc.server.WintyMC;
-import ru.doh1221.wintymc.server.game.entity.Player;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkGenerator;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkProvider;
 import ru.doh1221.wintymc.server.game.world.implement.ServerChunkProvider;
@@ -16,9 +16,9 @@ public class World {
 
     public final Random random;
     private final View3D spawnPosition;
-    private IChunkProvider chunkProvider;
     private final IChunkGenerator worldGenerator;
     private final ObjectArrayList<Player> players = new ObjectArrayList<>();
+    private IChunkProvider chunkProvider;
 
 
     public World(View3D view3D, IChunkGenerator worldGenerator, long seed) {

@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.game.blocks;
+package ru.doh1221.wintymc.server.game.objects.blocks;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import lombok.SneakyThrows;
@@ -110,7 +110,7 @@ public class BlockRegistry {
 
     @SneakyThrows
     public static void registerBlock(int blockID, Block clazz) {
-        if(!blockRegistry.containsKey(blockID)) {
+        if (!blockRegistry.containsKey(blockID)) {
             blockRegistry.put(blockID, clazz);
         } else {
             throw new IOException("Block ID already registered!");
@@ -137,8 +137,8 @@ public class BlockRegistry {
     }*/
 
     public static Block getByBlockName(String blockName) {
-        for(Block block : blockRegistry.values()) {
-            if(block.getName().equals(blockName)) {
+        for (Block block : blockRegistry.values()) {
+            if (block.getName().equals(blockName)) {
                 return block;
             }
         }

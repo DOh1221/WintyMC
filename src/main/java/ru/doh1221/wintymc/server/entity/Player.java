@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.game.entity;
+package ru.doh1221.wintymc.server.entity;
 
 import lombok.Getter;
 import ru.doh1221.wintymc.server.network.netty.tcp.ChannelWrapper;
@@ -23,6 +23,5 @@ public class Player extends Entity {
     public static long key(int cx, int cz) {
         return (((long) cx) << 32) ^ (cz & 0xffffffffL);
     }
-
 
 }

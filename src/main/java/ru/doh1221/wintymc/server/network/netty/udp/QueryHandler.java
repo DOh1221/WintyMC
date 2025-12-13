@@ -239,9 +239,9 @@ public final class QueryHandler extends SimpleChannelInboundHandler<DatagramPack
     // -------------------- Small helper types --------------------
 
     /**
-         * Simple immutable session record that stores challenge token and creation time.
-         */
-        private record QuerySession(int token, long createdAt) {
+     * Simple immutable session record that stores challenge token and creation time.
+     */
+    private record QuerySession(int token, long createdAt) {
     }
 
 }

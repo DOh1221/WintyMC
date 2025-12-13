@@ -1,8 +1,6 @@
-package ru.doh1221.wintymc.server.game.blocks;
+package ru.doh1221.wintymc.server.game.objects.blocks;
 
-import ru.doh1221.wintymc.server.game.ItemData;
-
-import java.util.Random;
+import ru.doh1221.wintymc.server.game.objects.ItemData;
 
 public class BlockBase implements Block {
 

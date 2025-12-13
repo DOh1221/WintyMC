@@ -1,7 +1,7 @@
 package ru.doh1221.wintymc.server.game.world;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import ru.doh1221.wintymc.server.game.entity.Player;
+import ru.doh1221.wintymc.server.entity.Player;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet4WorldTime;
 
 import java.util.Map;

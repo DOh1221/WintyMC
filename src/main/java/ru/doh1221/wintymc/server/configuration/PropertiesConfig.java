@@ -5,10 +5,9 @@ import java.util.Properties;
 
 public class PropertiesConfig {
 
-    private Properties properties;
     private final File File;
-
     private final String store;
+    private Properties properties;
 
     public PropertiesConfig(String folder, String path, String store) {
         this.File = new File(path);

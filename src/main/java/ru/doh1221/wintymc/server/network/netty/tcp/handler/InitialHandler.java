@@ -1,8 +1,8 @@
 package ru.doh1221.wintymc.server.network.netty.tcp.handler;
 
 
+import ru.doh1221.wintymc.server.entity.Player;
 import ru.doh1221.wintymc.server.WintyMC;
-import ru.doh1221.wintymc.server.game.entity.Player;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.chunk.Chunk;
 import ru.doh1221.wintymc.server.network.netty.tcp.ChannelWrapper;

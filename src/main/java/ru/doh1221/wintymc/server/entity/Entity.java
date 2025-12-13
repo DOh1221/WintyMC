@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.game.entity;
+package ru.doh1221.wintymc.server.entity;
 
 public class Entity {
 

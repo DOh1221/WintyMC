@@ -13,7 +13,6 @@ import ru.doh1221.wintymc.server.configuration.LanguageConfig;
 import ru.doh1221.wintymc.server.configuration.LanguageMapping;
 import ru.doh1221.wintymc.server.configuration.LoggingConfig;
 import ru.doh1221.wintymc.server.configuration.PropertiesConfig;
-import ru.doh1221.wintymc.server.game.chat.ThreadChat;
 import ru.doh1221.wintymc.server.game.world.ThreadWorldTime;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.implement.StoneGen;
@@ -39,7 +38,6 @@ public class WintyMC {
     public boolean enableSTATUS = false;
     public boolean enableRCON = false;
     public ThreadWorldTime timeTicker;
-    public ThreadChat chatThread;
     public LanguageMapping langMap;
     public World world;
     public int queryPort = 25565;
@@ -151,10 +149,8 @@ public class WintyMC {
         logger.info("Starting ticking threads...");
 
         timeTicker = new ThreadWorldTime();
-        chatThread = new ThreadChat();
 
         timeTicker.start();
-        chatThread.start();
 
         logger.info("Initializing worlds...");
 

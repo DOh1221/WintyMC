@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.game.items;
+package ru.doh1221.wintymc.server.game.objects.items;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import lombok.SneakyThrows;
@@ -10,12 +10,12 @@ public class ItemRegistry {
     private static Int2ObjectArrayMap<Item> ItemRegistry = new Int2ObjectArrayMap<>();
 
     static { // TODO: Для блоков со сложной логикой создать свои классы
-        
+
     }
 
     @SneakyThrows
     public static void registerItem(int ItemID, Item clazz) {
-        if(!ItemRegistry.containsKey(ItemID)) {
+        if (!ItemRegistry.containsKey(ItemID)) {
             ItemRegistry.put(ItemID, clazz);
         } else {
             throw new IOException("Item ID already registered!");
@@ -42,8 +42,8 @@ public class ItemRegistry {
     }*/
 
     public static Item getByItemName(String ItemName) {
-        for(Item Item : ItemRegistry.values()) {
-            if(Item.getName().equals(ItemName)) {
+        for (Item Item : ItemRegistry.values()) {
+            if (Item.getName().equals(ItemName)) {
                 return Item;
             }
         }

@@ -1,11 +1,11 @@
 package ru.doh1221.wintymc.server.game.blocks;
 
-import java.util.Random;
+import ru.doh1221.wintymc.server.game.ItemData;
 
 public interface Block {
     public int getID();
     public String getName();
-    public int idDropped(int i, Random random);
+    public ItemData[] dropInfo();
     public Block setHardness(float hardness);
     public float getHardness();
     public Block setResistance(float resistance);

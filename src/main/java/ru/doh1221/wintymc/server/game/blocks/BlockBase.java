@@ -1,5 +1,7 @@
 package ru.doh1221.wintymc.server.game.blocks;
 
+import ru.doh1221.wintymc.server.game.ItemData;
+
 import java.util.Random;
 
 public class BlockBase implements Block {
@@ -24,8 +26,9 @@ public class BlockBase implements Block {
         return name;
     }
 
-    public int idDropped(int i, Random random) {
-        return id;
+    @Override
+    public ItemData[] dropInfo() {
+        return new ItemData[]{new ItemData(this.id, true, null)};
     }
 
     @Override

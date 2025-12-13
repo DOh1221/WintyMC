@@ -10,8 +10,8 @@ public class BlockRegistry {
     private static Int2ObjectArrayMap<Block> blockRegistry = new Int2ObjectArrayMap<>();
 
     static { // TODO: Для блоков со сложной логикой создать свои классы
-        registerBlock(1, new BlockStone(1, "stone").setHardness(1.5F).setResistance(10F));
-        registerBlock(2, new BlockGrass(2, "grass").setHardness(0.6F));
+        registerBlock(1, new BlockBase(1, "stone").setHardness(1.5F).setResistance(10F));
+        registerBlock(2, new BlockBase(2, "grass").setHardness(0.6F));
         registerBlock(3, new BlockBase(3, "dirt").setHardness(0.5F));
         registerBlock(4, new BlockBase(4, "stonebrick").setHardness(2.0F).setResistance(10F));
         registerBlock(5, new BlockBase(5, "wood").setHardness(2.0F).setResistance(5F));

@@ -17,9 +17,9 @@ public class BlockRegistry {
         registerBlock(5, new BlockBase(5, "wood").setHardness(2.0F).setResistance(5F));
         registerBlock(6, new BlockBase(6, "sapling").setHardness(0.0F));
         registerBlock(7, new BlockBase(7, "bedrock").setHardness(-1.0F).setResistance(6000000F));
-        registerBlock(8, new BlockBase(8, "water").setHardness(100F)); // Still or moving?
+        registerBlock(8, new BlockBase(8, "stationary_water").setHardness(100F)); // Still or moving?
         registerBlock(9, new BlockBase(9, "water").setHardness(100F)); // Still or moving?
-        registerBlock(10, new BlockBase(10, "lava").setHardness(0.0F)); // Still or moving?
+        registerBlock(10, new BlockBase(10, "stationary_lava").setHardness(0.0F)); // Still or moving?
         registerBlock(11, new BlockBase(11, "lava").setHardness(100F)); // Still or moving?
         registerBlock(12, new BlockBase(12, "sand").setHardness(0.5F));
         registerBlock(13, new BlockBase(13, "gravel").setHardness(0.6F));
@@ -142,7 +142,8 @@ public class BlockRegistry {
                 return block;
             }
         }
-        return null;
+        System.out.println("Can't find " + blockName); // временно. Не хочу сейчас оборачивать всё в Object.notNUll и тд
+        return new BlockBase(0, "air");
     }
 
 }

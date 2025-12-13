@@ -12,7 +12,7 @@ public abstract class NBTBase {
     public NBTBase() {
     }
 
-    public static NBTBase b(DataInput datainput) throws IOException {
+    public static NBTBase read(DataInput datainput) throws IOException {
         byte b0 = datainput.readByte();
 
         if (b0 == 0) {
@@ -26,7 +26,7 @@ public abstract class NBTBase {
         }
     }
 
-    public static void a(NBTBase nbtbase, DataOutput dataoutput) throws IOException {
+    public static void write(NBTBase nbtbase, DataOutput dataoutput) throws IOException {
         dataoutput.writeByte(nbtbase.a());
         if (nbtbase.a() != 0) {
             dataoutput.writeUTF(nbtbase.b());

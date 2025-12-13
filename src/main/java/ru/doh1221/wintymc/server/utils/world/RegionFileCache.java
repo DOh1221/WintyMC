@@ -1,4 +1,4 @@
-package ru.doh1221.wintymc.server.utils.chunkio;
+package ru.doh1221.wintymc.server.utils.world;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

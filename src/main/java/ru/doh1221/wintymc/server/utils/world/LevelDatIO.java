@@ -10,21 +10,21 @@ public final class LevelDatIO {
 
     private LevelDatIO() {}
 
-    public static Optional<LevelInfo> read(File worldDir) {
+    public static LevelInfo read(File worldDir) {
         File levelDat = new File(worldDir, "level.dat");
         File levelDatOld = new File(worldDir, "level.dat_old");
 
         try {
             File target = levelDat.exists() ? levelDat : levelDatOld;
-            if (!target.exists()) return Optional.empty();
+            if (!target.exists()) return null;
 
             NBTTagCompound root = CompressedStreamTools.read(new FileInputStream(target));
             NBTTagCompound data = root.getCompound("Data");
 
-            return Optional.of(LevelInfo.fromNBT(data));
+            return LevelInfo.fromNBT(data);
         } catch (Exception e) {
             e.printStackTrace();
-            return Optional.empty();
+            return null;
         }
     }
 

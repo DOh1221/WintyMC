@@ -20,7 +20,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
 
     private ChannelWrapper channel;
 
-    private ConnectionHandler handler = new InitialHandler();
+    private ConnectionHandler handler;
 
     public void setHandler(ConnectionHandler handler) {
         Preconditions.checkArgument(handler != null, "handler");

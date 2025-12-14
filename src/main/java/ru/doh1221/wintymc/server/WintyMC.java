@@ -13,17 +13,22 @@ import ru.doh1221.wintymc.server.configuration.LanguageConfig;
 import ru.doh1221.wintymc.server.configuration.LanguageMapping;
 import ru.doh1221.wintymc.server.configuration.LoggingConfig;
 import ru.doh1221.wintymc.server.configuration.PropertiesConfig;
+import ru.doh1221.wintymc.server.game.world.LocalWorldCreator;
 import ru.doh1221.wintymc.server.game.world.ThreadWorldTime;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.implement.StoneGen;
 import ru.doh1221.wintymc.server.network.netty.PipelineUtils;
 import ru.doh1221.wintymc.server.utils.location.View3D;
+import ru.doh1221.wintymc.server.utils.world.WorldLoader;
+import ru.doh1221.wintymc.server.utils.world.impl.LocalWorldLoader;
 
+import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.Random;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.random.RandomGeneratorFactory;
 
 public class WintyMC {
 
@@ -147,19 +152,41 @@ public class WintyMC {
             }
         });
 
-        logger.info("Starting ticking threads...");
+        /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 
-        timeTicker = new ThreadWorldTime();
+        LocalWorldCreator creator = new LocalWorldCreator();
+        World world = creator.createWorld("world", new StoneGen(), new Random().nextInt());
 
-        timeTicker.start();
 
-        logger.info("Initializing worlds...");
 
-        // TODO Загрузка миров
 
-        world = new World(new View3D(0, 0, 0, 0.0F, 0.0F), new StoneGen(), new Random().nextInt());
-        world.initialize();
-        world.startTicking();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 
         long endTime = System.nanoTime() - startTime;
         String s2 = String.format("%.3fs", (double) endTime / 1000000000);

@@ -7,11 +7,17 @@ import ru.doh1221.wintymc.server.utils.world.WorldLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 public class LocalWorldLoader implements WorldLoader {
 
     public File directory;
     public LevelInfo info;
+    public boolean exists;
+
+    public LocalWorldLoader(File directory) {
+        this.directory = directory;
+    }
 
     @Override
     public File getDirectory() {
@@ -19,24 +25,25 @@ public class LocalWorldLoader implements WorldLoader {
     }
 
     @Override
-    public boolean worldExists(String worldName) {
-        return false;
+    public boolean worldExists() {
+        return this.exists;
     }
 
     @Override
-    public LevelInfo loadWorldInfo(String worldName) throws IOException {
-        return LevelDatIO.read(this.directory).get();
+    public LevelInfo load() throws IOException {
+        LevelInfo info = LevelDatIO.read(this.directory);
+        exists = info != null;
+        return info;
     }
 
     @Override
-    public LevelInfo createWorld(LevelInfo info) throws IOException {
-        return null;
-    }
-
-    @Override
-    public void saveWorldInfo(LevelInfo info) throws IOException {
-
+    public void save() throws IOException {
+        if(!directory.exists()) {
+            directory.mkdirs();
+        }
+        lock();
         LevelDatIO.writeAtomic(this.directory, info);
+        unlock();
     }
 
     @Override

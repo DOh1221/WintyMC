@@ -2,6 +2,7 @@ package ru.doh1221.wintymc.server.entity;
 
 import lombok.Getter;
 import ru.doh1221.wintymc.server.network.netty.tcp.ChannelWrapper;
+import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet255DisconnectKick;
 import ru.doh1221.wintymc.server.utils.location.View3D;
 
 import java.util.HashSet;
@@ -20,8 +21,10 @@ public class Player extends Entity {
 
     public Set<Long> loadedChunks = new HashSet<>();
 
-    public static long key(int cx, int cz) {
-        return (((long) cx) << 32) ^ (cz & 0xffffffffL);
+    public void kick(String disconnectReason) {
+        this.connection.write(new Packet255DisconnectKick(disconnectReason));
+        this.connection.disconnectReason = disconnectReason;
+        this.connection.close();
     }
 
 }

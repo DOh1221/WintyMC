@@ -4,6 +4,7 @@ import ru.doh1221.wintymc.server.game.objects.blocks.BlockRegistry;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.chunk.Chunk;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkGenerator;
+import ru.doh1221.wintymc.server.utils.location.View3D;
 
 import java.util.Objects;
 import java.util.Random;
@@ -23,6 +24,11 @@ public class StoneGen implements IChunkGenerator {
         }
 
         return test;
+    }
+
+    @Override
+    public View3D getSpawnPosition() {
+        return new View3D(0, 0, 0, 0, 0);
     }
 
 }

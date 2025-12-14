@@ -1,44 +1,50 @@
 package ru.doh1221.wintymc.server.utils.world;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import ru.doh1221.wintymc.server.utils.nbt.NBTTagCompound;
+@AllArgsConstructor
+@Setter
+@Getter
+public class LevelInfo {
+        long randomSeed;
+        int spawnX;
+        int spawnY;
+        int spawnZ;
+        float spawnYaw;
+        float spawnPitch;
+        long worldTime;
+        long lastPlayed;
+        long sizeOnDisk;
+        String levelName;
+        int version;
+        int rainTime;
+        boolean raining;
+        int thunderTime;
+        boolean thundering;
+        NBTTagCompound playerData;
 
-public record LevelInfo(
-        long randomSeed,
-        int spawnX,
-        int spawnY,
-        int spawnZ,
-        float spawnYaw,
-        float spawnPitch,
-        long worldTime,
-        long lastPlayed,
-        long sizeOnDisk,
-        String levelName,
-        int version,
-        int rainTime,
-        boolean raining,
-        int thunderTime,
-        boolean thundering,
-        NBTTagCompound playerData
-        )
-{
+    public static final int saveVersion = 19132;
+
     public static NBTTagCompound toNBT(LevelInfo info) {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setLong("RandomSeed", info.randomSeed());
-        nbttagcompound.setInt("SpawnX", info.spawnX());
-        nbttagcompound.setInt("SpawnY", info.spawnY());
-        nbttagcompound.setInt("SpawnZ", info.spawnZ());
-        nbttagcompound.setFloat("SpawnYaw", info.spawnYaw());
-        nbttagcompound.setFloat("SpawnPitch", info.spawnPitch());
-        nbttagcompound.setLong("Time", info.worldTime());
-        nbttagcompound.setLong("SizeOnDisk", info.sizeOnDisk());
-        nbttagcompound.setLong("LastPlayed", info.lastPlayed());
-        nbttagcompound.setString("LevelName", info.levelName());
-        nbttagcompound.setInt("version", info.version());
-        nbttagcompound.setInt("rainTime", info.rainTime());
-        nbttagcompound.setBoolean("raining", info.raining());
-        nbttagcompound.setInt("thunderTime", info.thunderTime());
-        nbttagcompound.setBoolean("thundering", info.thundering());
-        if(info.playerData() != null && info.playerData().hasKey("Player")) {
+        nbttagcompound.setLong("RandomSeed", info.randomSeed);
+        nbttagcompound.setInt("SpawnX", info.spawnX);
+        nbttagcompound.setInt("SpawnY", info.spawnY);
+        nbttagcompound.setInt("SpawnZ", info.spawnZ);
+        nbttagcompound.setFloat("SpawnYaw", info.spawnYaw);
+        nbttagcompound.setFloat("SpawnPitch", info.spawnPitch);
+        nbttagcompound.setLong("Time", info.worldTime);
+        nbttagcompound.setLong("SizeOnDisk", info.sizeOnDisk);
+        nbttagcompound.setLong("LastPlayed", info.lastPlayed);
+        nbttagcompound.setString("LevelName", info.levelName);
+        nbttagcompound.setInt("version", info.version);
+        nbttagcompound.setInt("rainTime", info.rainTime);
+        nbttagcompound.setBoolean("raining", info.raining);
+        nbttagcompound.setInt("thunderTime", info.thunderTime);
+        nbttagcompound.setBoolean("thundering", info.thundering);
+        if(info.playerData != null && info.playerData.hasKey("Player")) {
             nbttagcompound.setCompound("Player", info.playerData);
         }
         return nbttagcompound;

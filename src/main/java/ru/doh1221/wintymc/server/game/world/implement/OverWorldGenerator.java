@@ -211,7 +211,7 @@ public class OverWorldGenerator implements IChunkProvider {
         this.a(i, j, abyte, this.v, adouble);
         this.a(i, j, abyte, this.v);
         this.u.a(this, this.p, i, j, abyte);
-        chunk.initializeLighting();
+        //chunk.initializeLighting();
         return chunk;
     }
 

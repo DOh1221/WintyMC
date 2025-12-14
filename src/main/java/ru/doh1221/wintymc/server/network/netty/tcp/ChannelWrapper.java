@@ -11,6 +11,7 @@ public class ChannelWrapper {
     public Channel ch;
     @Getter
     private volatile boolean closed;
+    public String disconnectReason = "Connection closed";
 
     public ChannelWrapper(ChannelHandlerContext ctx) {
         this.ch = ctx.channel();

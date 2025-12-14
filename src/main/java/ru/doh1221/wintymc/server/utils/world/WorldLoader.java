@@ -8,15 +8,11 @@ public interface WorldLoader extends Closeable {
 
     File getDirectory();
 
-    boolean worldExists(String worldName);
+    boolean worldExists();
 
-    LevelInfo loadWorldInfo(String worldName) throws IOException;
+    LevelInfo load() throws IOException;
 
-    LevelInfo createWorld(LevelInfo info) throws IOException;
-
-    void saveWorldInfo(LevelInfo info) throws IOException;
-
-    //ChunkStorage getChunkStorage(String worldName);
+    void save() throws IOException;
 
     void lock() throws IOException;
 

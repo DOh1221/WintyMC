@@ -15,7 +15,7 @@ public class ServerChunkProvider implements IChunkProvider {
     @Override
     public Chunk getOrCreate(int cx, int cz) {
         Chunk chunk = new Chunk(cx, cz);
-        chunk.blocks = generator.generateChunk(world, cx, cz, world.random);
+        //chunk.blocks = generator.generateChunk(world, cx, cz, world.random);
         return chunk;
     }
 }

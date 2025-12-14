@@ -1,5 +1,7 @@
 package ru.doh1221.wintymc.server.game.world.chunk;
 
+import lombok.Getter;
+
 /**
  * Clean, standalone chunk container.
  * Holds ALL data required by Packet51MapChunk:
@@ -28,44 +30,29 @@ public class Chunk {
     private final NibbleArray skyLight = new NibbleArray(TOTAL_BLOCKS);
     // Heightmap (not in Packet51, but useful)
     private final byte[] heightMap = new byte[SIZE * SIZE];
+    @Getter
     private final int chunkX;
+    @Getter
     private final int chunkZ;
     // Block IDs
     public byte[] blocks = new byte[TOTAL_BLOCKS];
 
-    // private final List<List<Entity>> entitySlices = new ArrayList<>(HEIGHT / 16);
-    // private final Map<Loc3D, TileEntity> tileEntities = new HashMap<>();
-
     public Chunk(int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-
-        // for (int i = 0; i < HEIGHT / 16; i++) {
-        //     entitySlices.add(new ArrayList<>());
-        // }
     }
 
     public Chunk(int chunkX, int chunkZ, byte[] data) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.blocks = data;
-        // for (int i = 0; i < HEIGHT / 16; i++) {
-        //     entitySlices.add(new ArrayList<>());
-        // }
     }
 
-    // --------------------------------
-    // Index helper
-    // --------------------------------
     public static int index(int x, int y, int z) {
         // X (0–15), Y (0–127), Z (0–15)
         return y + (z * HEIGHT) + (x * HEIGHT * SIZE);
     }
 
-
-    // --------------------------------
-    // Block access
-    // --------------------------------
     public byte getBlock(int x, int y, int z) {
         return blocks[index(x, y, z)];
     }
@@ -99,9 +86,6 @@ public class Chunk {
         skyLight.set(x, y, z, value);
     }
 
-    // --------------------------------
-    // Heightmap
-    // --------------------------------
     private void updateHeightMap(int x, int y, int z) {
         int idx = z * SIZE + x;
         int prev = Byte.toUnsignedInt(heightMap[idx]);
@@ -110,34 +94,6 @@ public class Chunk {
             heightMap[idx] = (byte) y;
         }
     }
-
-    // --------------------------------
-    // Tile entities
-    // --------------------------------
-    // public TileEntity getTileEntity(int x, int y, int z) {
-    //     return tileEntities.get(new Loc3D(x, y, z));
-    // }
-
-    // public void setTileEntity(int x, int y, int z, TileEntity te) {
-    //     Loc3D pos = new Loc3D(x, y, z);
-    //     te.setPosition(pos);
-    //     tileEntities.put(pos, te);
-    // }
-
-    // public void removeTileEntity(int x, int y, int z) {
-    //     tileEntities.remove(new Loc3D(x, y, z));
-    // }
-
-    // --------------------------------
-    // Packet51MapChunk encoder
-    // --------------------------------
-    // Внутри класса Chunk — замените существующие методы на эти
-
-    /**
-     * Формирует payload exactly как в оригинальном Packet51 для полного чанка 16x128x16.
-     * Формат: [blocks (TOTAL_BLOCKS bytes)] [metadata (TOTAL_BLOCKS/2 bytes)]
-     * [blockLight (TOTAL_BLOCKS/2 bytes)] [skyLight (TOTAL_BLOCKS/2 bytes)]
-     */
     public byte[] toPacketData() {
         // total: TOTAL_BLOCKS + 3 * (TOTAL_BLOCKS / 2) = TOTAL_BLOCKS * 5 / 2
         int nibbleSize = TOTAL_BLOCKS / 2;
@@ -145,40 +101,23 @@ public class Chunk {
         byte[] out = new byte[size];
         int cursor = 0;
 
-        // 1) Blocks — копируем весь массив блоков
         System.arraycopy(this.blocks, 0, out, cursor, TOTAL_BLOCKS);
         cursor += TOTAL_BLOCKS;
 
-        // 2) Metadata — NibbleArray уже хранит упакованные байты (по 2 nibbles в байт)
         System.arraycopy(this.metadata.raw(), 0, out, cursor, nibbleSize);
         cursor += nibbleSize;
 
-        // 3) Block light
         System.arraycopy(this.blockLight.raw(), 0, out, cursor, nibbleSize);
         cursor += nibbleSize;
 
-        // 4) Sky light
         System.arraycopy(this.skyLight.raw(), 0, out, cursor, nibbleSize);
         cursor += nibbleSize;
 
-        // на всякий случай:
         if (cursor != size) {
             throw new IllegalStateException("PacketData size mismatch: expected=" + size + " wrote=" + cursor);
         }
 
         return out;
-    }
-
-    // --------------------------------
-    // Getters
-    // --------------------------------
-
-    public int getChunkX() {
-        return chunkX;
-    }
-
-    public int getChunkZ() {
-        return chunkZ;
     }
 
     public byte[] getBlocksRaw() {
@@ -188,5 +127,4 @@ public class Chunk {
     public byte[] getHeightMapRaw() {
         return heightMap;
     }
-    //public Map<Loc3D, TileEntity> getTileEntities() { return tileEntities; }
 }

@@ -3,6 +3,7 @@ package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world;
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
+import ru.doh1221.wintymc.server.utils.location.Loc3D;
 
 import java.io.IOException;
 
@@ -14,6 +15,12 @@ public class Packet6SpawnPosition extends Packet {
 
     public Packet6SpawnPosition() {
 
+    }
+
+    public Packet6SpawnPosition(Loc3D loc3D) {
+        this.x = (int) loc3D.getX();
+        this.y = (byte) loc3D.getY();
+        this.z = (int) loc3D.getZ();
     }
 
     public Packet6SpawnPosition(int x, int y, int z) {

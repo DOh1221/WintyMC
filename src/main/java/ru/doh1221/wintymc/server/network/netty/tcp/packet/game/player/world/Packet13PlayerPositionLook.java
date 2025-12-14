@@ -23,10 +23,10 @@ public class Packet13PlayerPositionLook extends Packet10OnGround {
     public Packet13PlayerPositionLook(View3D view) {
         this.x = view.getX();
         this.y = view.getY();
-        this.stance = 0.75;
         this.z = view.getZ();
         this.yaw = view.getYaw();
         this.pitch = view.getPitch();
+        this.stance = this.y + 1.62;
     }
 
     @SneakyThrows

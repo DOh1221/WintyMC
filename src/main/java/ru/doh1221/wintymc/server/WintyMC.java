@@ -13,22 +13,16 @@ import ru.doh1221.wintymc.server.configuration.LanguageConfig;
 import ru.doh1221.wintymc.server.configuration.LanguageMapping;
 import ru.doh1221.wintymc.server.configuration.LoggingConfig;
 import ru.doh1221.wintymc.server.configuration.PropertiesConfig;
-import ru.doh1221.wintymc.server.game.world.LocalWorldCreator;
-import ru.doh1221.wintymc.server.game.world.ThreadWorldTime;
 import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.implement.StoneGen;
 import ru.doh1221.wintymc.server.network.netty.PipelineUtils;
-import ru.doh1221.wintymc.server.utils.location.View3D;
-import ru.doh1221.wintymc.server.utils.world.WorldLoader;
-import ru.doh1221.wintymc.server.utils.world.impl.LocalWorldLoader;
 
-import java.io.File;
 import java.net.InetSocketAddress;
-import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.random.RandomGeneratorFactory;
 
 public class WintyMC {
 
@@ -43,7 +37,6 @@ public class WintyMC {
     public String version = "1.0.1-SNAPSHOT";
     public boolean enableSTATUS = false;
     public boolean enableRCON = false;
-    public ThreadWorldTime timeTicker;
     public LanguageMapping langMap;
     public World world;
     public int queryPort = 25565;
@@ -51,6 +44,8 @@ public class WintyMC {
     public boolean showOfflineMessage = true;
     PropertiesConfig config = null;
     private EventLoopGroup eventLoopGroup;
+    @Getter
+    ExecutorService chunkIO = Executors.newFixedThreadPool(2);
     @Getter
     private boolean starting = false; // TODO сделаю потом так чтобы при старте сервера, если игрок заходит, его кикало если он ещё полностью не запущен
 
@@ -154,9 +149,7 @@ public class WintyMC {
 
         /* ---------------------------------------------------------------------------------------------------------------------------------------- */
 
-        LocalWorldCreator creator = new LocalWorldCreator();
-        World world = creator.createWorld("world", new StoneGen(), new Random().nextInt());
-
+        world = new World("world", 123, new StoneGen());
 
 
 

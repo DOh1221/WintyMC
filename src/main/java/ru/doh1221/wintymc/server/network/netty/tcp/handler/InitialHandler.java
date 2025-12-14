@@ -7,6 +7,7 @@ import ru.doh1221.wintymc.server.network.netty.tcp.ConnectionHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet2Handshake;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.general.Packet255DisconnectKick;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.status.Packet254GetInfo;
+import ru.doh1221.wintymc.server.utils.location.View3D;
 
 public class InitialHandler extends ConnectionHandler {
 
@@ -42,10 +43,12 @@ public class InitialHandler extends ConnectionHandler {
         WintyMC.getInstance().getLogger().info(packet2Handshake.username + " [" + this.channel.getHandle().remoteAddress() + "] connected");
         channel.write(new Packet2Handshake("-")); // TODO Online Mode support
 
-        Player player = new Player();
+        Player player = new Player(channel);
         player.username = packet2Handshake.username;
+        player.position = new View3D(0, 0, 0, 0, 0);
 
         setHandler(new InGameHandler(player));
+
     }
 
     @Override

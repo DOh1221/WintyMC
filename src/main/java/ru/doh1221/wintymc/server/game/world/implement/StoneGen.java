@@ -18,7 +18,6 @@ public class StoneGen implements IChunkGenerator {
         int y = 1;
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                test[Chunk.index(x, y + 1, z)] = 2;
                 test[Chunk.index(x, y, z)] = (byte) Objects.requireNonNull(BlockRegistry.getByBlockName("stone")).getID();
             }
         }

@@ -3,39 +3,52 @@ package ru.doh1221.wintymc.server.game.world.chunk;
 import lombok.Getter;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet51MapChunk;
 
+import java.util.Arrays;
+
 public class Chunk {
 
     public static final int SIZE = 16;
     public static final int HEIGHT = 128;
     public static final int TOTAL_BLOCKS = SIZE * SIZE * HEIGHT;
-    // Metadata (0–15)
-    private final NibbleArray metadata = new NibbleArray(TOTAL_BLOCKS);
-    // Block light (0–15)
-    private final NibbleArray blockLight = new NibbleArray(TOTAL_BLOCKS);
-    // Sky light (0–15)
-    private final NibbleArray skyLight = new NibbleArray(TOTAL_BLOCKS);
-    // Heightmap (not in Packet51, but useful)
-    private final byte[] heightMap = new byte[SIZE * SIZE];
+    private static final byte[] EMPTY_BLOCKS;
+
+    static {
+        EMPTY_BLOCKS = new byte[TOTAL_BLOCKS];
+        Arrays.fill(EMPTY_BLOCKS, (byte) 0xFF);
+    }
+
     @Getter
     private final int chunkX;
     @Getter
     private final int chunkZ;
-    // Block IDs
-    public byte[] blocks = new byte[TOTAL_BLOCKS];
+
+    private byte[] blocks;
+    private NibbleArray metadata;
+    private NibbleArray blockLight;
+    private NibbleArray skyLight;
+    private final byte[] heightMap = new byte[SIZE * SIZE];
+
+    public Chunk(int chunkX, int chunkZ, byte[] blocks) {
+        this(chunkX, chunkZ);
+        this.blocks = blocks;
+
+        this.metadata = new NibbleArray(TOTAL_BLOCKS);
+        this.blockLight = new NibbleArray(TOTAL_BLOCKS);
+        this.skyLight = new NibbleArray(TOTAL_BLOCKS);
+
+        //recalculateHeightMap();
+    }
 
     public Chunk(int chunkX, int chunkZ) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
     }
 
-    public Chunk(int chunkX, int chunkZ, byte[] data) {
-        this.chunkX = chunkX;
-        this.chunkZ = chunkZ;
-        this.blocks = data;
+    public static Chunk empty(int cx, int cz) {
+        return new Chunk(cx, cz, EMPTY_BLOCKS);
     }
 
     public static int index(int x, int y, int z) {
-        // X (0–15), Y (0–127), Z (0–15)
         return y + (z * HEIGHT) + (x * HEIGHT * SIZE);
     }
 
@@ -81,6 +94,25 @@ public class Chunk {
         }
     }
 
+    public void recalculateHeightMap() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int z = 0; z < SIZE; z++) {
+
+                int height = 0;
+                int baseIndex = (x * HEIGHT * SIZE) + (z * HEIGHT);
+
+                for (int y = HEIGHT - 1; y >= 0; y--) {
+                    if (blocks[baseIndex + y] != 0) {
+                        height = y;
+                        break;
+                    }
+                }
+
+                heightMap[z * SIZE + x] = (byte) height;
+            }
+        }
+    }
+
     public static Chunk fromPacketData(Packet51MapChunk packet) {
         if (packet == null) {
             throw new IllegalArgumentException("packet == null");
@@ -103,38 +135,14 @@ public class Chunk {
         System.arraycopy(data, cursor, chunk.blocks, 0, TOTAL_BLOCKS);
         cursor += TOTAL_BLOCKS;
 
-        System.arraycopy(
-                data,
-                cursor,
-                chunk.metadata.raw(),
-                0,
-                nibbleSize
-        );
+        System.arraycopy(data, cursor, chunk.metadata.raw(), 0, nibbleSize);
         cursor += nibbleSize;
 
-        System.arraycopy(
-                data,
-                cursor,
-                chunk.blockLight.raw(),
-                0,
-                nibbleSize
-        );
+        System.arraycopy(data, cursor, chunk.blockLight.raw(), 0, nibbleSize);
         cursor += nibbleSize;
 
-        System.arraycopy(
-                data,
-                cursor,
-                chunk.skyLight.raw(),
-                0,
-                nibbleSize
-        );
+        System.arraycopy(data, cursor, chunk.skyLight.raw(), 0, nibbleSize);
         cursor += nibbleSize;
-
-        if (cursor != data.length) {
-            throw new IllegalStateException(
-                    "Packet51 parse mismatch: read=" + cursor + " size=" + data.length
-            );
-        }
 
         for (int x = 0; x < SIZE; x++) {
             for (int z = 0; z < SIZE; z++) {
@@ -147,7 +155,6 @@ public class Chunk {
                         break;
                     }
                 }
-
                 chunk.heightMap[idx] = (byte) height;
             }
         }
@@ -155,9 +162,7 @@ public class Chunk {
         return chunk;
     }
 
-
     public static Packet51MapChunk toPacketData(Chunk chunk) {
-        // total: TOTAL_BLOCKS + 3 * (TOTAL_BLOCKS / 2) = TOTAL_BLOCKS * 5 / 2
         int nibbleSize = TOTAL_BLOCKS / 2;
         int size = TOTAL_BLOCKS + 3 * nibbleSize;
         byte[] out = new byte[size];
@@ -175,14 +180,10 @@ public class Chunk {
         System.arraycopy(chunk.skyLight.raw(), 0, out, cursor, nibbleSize);
         cursor += nibbleSize;
 
-        if (cursor != size) {
-            throw new IllegalStateException("PacketData size mismatch: expected=" + size + " wrote=" + cursor);
-        }
-
         return new Packet51MapChunk(
-                chunk.getChunkX(),
+                chunk.getChunkX() * 16,
                 0,
-                chunk.getChunkZ(),
+                chunk.getChunkZ() * 16,
                 16,
                 128,
                 16,
@@ -197,5 +198,4 @@ public class Chunk {
     public byte[] getHeightMapRaw() {
         return heightMap;
     }
-
 }

@@ -48,7 +48,7 @@ public class Chunk {
     public Chunk(int chunkX, int chunkZ, byte[] data) {
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
-
+        this.blocks = data;
         // for (int i = 0; i < HEIGHT / 16; i++) {
         //     entitySlices.add(new ArrayList<>());
         // }

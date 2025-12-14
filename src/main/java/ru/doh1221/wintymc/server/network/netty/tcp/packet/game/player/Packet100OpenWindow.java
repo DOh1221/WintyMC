@@ -12,7 +12,7 @@ public class Packet100OpenWindow extends Packet {
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        System.out.println("ewgewgewge");
     }
 
     @Override

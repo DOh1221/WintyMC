@@ -1,35 +1,38 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
+import ru.doh1221.wintymc.server.utils.Stream;
 
 import java.io.IOException;
 
-public class Packet14BlockDestroy extends Packet {
+public class Packet25SpawnPainting extends Packet {
 
-    public byte status;
+    public int entityID;
+    public String title;
     public int x;
-    public byte y;
+    public int y;
     public int z;
-    public byte face;
+    public byte direction;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.status = in.readByte();
+        this.entityID = in.readInt();
+        this.title = Stream.readString(in, false);
         this.x = in.readInt();
-        this.y = in.readByte();
+        this.y = in.readInt();
         this.z = in.readInt();
-        this.face = in.readByte();
+        this.direction = in.readByte();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.status);
+        out.writeInt(this.entityID);
+        Stream.writeString(this.title, out, false);
         out.writeInt(this.x);
-        out.writeByte(this.y);
+        out.writeInt(this.y);
         out.writeInt(this.z);
-        out.writeByte(this.face);
+        out.writeByte(this.direction);
     }
 
     @Override
@@ -39,6 +42,7 @@ public class Packet14BlockDestroy extends Packet {
 
     @Override
     public int size() {
-        return 14;
+        return 0x1B;
     }
+
 }

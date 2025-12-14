@@ -8,16 +8,16 @@ import java.io.IOException;
 
 public class Packet9Respawn extends Packet {
 
-    public byte worldInfo = 0;
+    public byte dimension = 0;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        this.dimension = in.readByte();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+        out.writeByte(this.dimension);
     }
 
     @Override

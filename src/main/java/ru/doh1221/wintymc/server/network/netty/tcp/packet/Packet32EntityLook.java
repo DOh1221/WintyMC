@@ -1,23 +1,27 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
 
-public class Packet46EntityMetadata extends Packet {
-
-    public byte worldInfo = 0;
+public class Packet32EntityLook extends Packet {
+    public int entityID;
+    public byte yaw;
+    public byte pitch;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        this.entityID = in.readInt();
+        this.yaw = in.readByte();
+        this.pitch = in.readByte();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+        out.writeInt(this.entityID);
+        out.writeByte(this.yaw);
+        out.writeByte(this.pitch);
     }
 
     @Override
@@ -27,6 +31,6 @@ public class Packet46EntityMetadata extends Packet {
 
     @Override
     public int size() {
-        return 0x35;
+        return 0;
     }
 }

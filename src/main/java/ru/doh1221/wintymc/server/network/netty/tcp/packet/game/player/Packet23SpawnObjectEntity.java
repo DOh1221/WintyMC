@@ -8,16 +8,28 @@ import java.io.IOException;
 
 public class Packet23SpawnObjectEntity extends Packet {
 
-    public byte worldInfo = 0;
+    public int entityID;
+    public byte objectType;
+    public int x;
+    public int y;
+    public int z;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        this.entityID = in.readInt();
+        this.objectType = in.readByte();
+        this.x = in.readInt();
+        this.y = in.readInt();
+        this.z = in.readInt();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+        out.writeInt(this.entityID);
+        out.writeByte(this.objectType);
+        out.writeInt(this.x);
+        out.writeInt(this.y);
+        out.writeInt(this.z);
     }
 
     @Override

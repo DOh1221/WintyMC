@@ -183,7 +183,7 @@ public class InitialHandler extends ConnectionHandler {
         channel.write(new Packet50PreChunk(cx, cz, true));
 
         // 2. Сам чанк
-        byte[] data = chunk.toPacketData();
+        byte[] data = Chunk.toPacketData(chunk).getRawData();
 
         Packet51MapChunk map = new Packet51MapChunk(
                 cx * 16,

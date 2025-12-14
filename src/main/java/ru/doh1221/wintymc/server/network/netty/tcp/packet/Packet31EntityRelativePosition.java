@@ -1,32 +1,31 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
 
-public class Packet28EntityVelocity extends Packet {
+public class Packet31EntityRelativePosition extends Packet {
 
     public int entityID;
-    public short xVel;
-    public short yVel;
-    public short zVel;
+    public byte x;
+    public byte y;
+    public byte z;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
         this.entityID = in.readInt();
-        this.xVel = in.readShort();
-        this.yVel = in.readShort();
-        this.zVel = in.readShort();
+        this.x = in.readByte();
+        this.y = in.readByte();
+        this.z = in.readByte();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
         out.writeInt(this.entityID);
-        out.writeShort(this.xVel);
-        out.writeShort(this.yVel);
-        out.writeShort(this.zVel);
+        out.writeByte(this.x);
+        out.writeByte(this.y);
+        out.writeByte(this.z);
     }
 
     @Override
@@ -36,6 +35,6 @@ public class Packet28EntityVelocity extends Packet {
 
     @Override
     public int size() {
-        return 0x1B;
+        return 0;
     }
 }

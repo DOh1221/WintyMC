@@ -8,16 +8,19 @@ import java.io.IOException;
 
 public class Packet22CollectItem extends Packet {
 
-    public byte worldInfo = 0;
+    public int entityItemID;
+    public int entityCollectorID;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        this.entityItemID = in.readInt();
+        this.entityCollectorID = in.readInt();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+        out.writeInt(this.entityItemID);
+        out.writeInt(this.entityCollectorID);
     }
 
     @Override

@@ -58,9 +58,21 @@ public abstract class Packet {
         register(0x16, true, true, Packet22CollectItem.class);              // 22
         register(0x17, true, true, Packet23SpawnObjectEntity.class);        // 23
         register(0x18, true, true, Packet24SpawnMobEntity.class);           // 24
+        register(0x19, true, true, Packet25SpawnPainting.class);            // 25
+        register(0x1B, true, true, Packet27PlayerMovement.class);           // 27
+
+        register(0x1C, true, true, Packet28EntityVelocity.class);           // 28
+        register(0x1D, true, true, Packet29DestroyEntity.class);            // 29
+
         register(0x1E, true, true, Packet30Entity.class);                   // 30
-        register(0x1F, true, true, Packet31EntityPositionAndLook.class);    // 31
-        register(0x2E, true, true, Packet46EntityMetadata.class);           // 46
+        register(0x1F, true, true, Packet31EntityRelativePosition.class);   // 31
+        register(0x20, true, true, Packet32EntityLook.class);               // 32
+        register(0x21, true, true, Packet33EntityRelativePositionAndLook.class);   // 33
+        register(0x22, true, true, Packet34EntityPositionAndLook.class);    // 34
+        register(0x26, true, true, Packet38EntityHealthAction.class);       // 38
+        register(0x27, true, true, Packet39MountEntity.class);   // 39
+        register(0x28, true, true, Packet40EntityMetadata.class);           // 40
+
         register(0x32, true, false, Packet50PreChunk.class);                // 50
         register(0x33, true, false, Packet51MapChunk.class);                // 51
         register(0x3D, true, true, Packet61Effect.class);                   // 61
@@ -70,6 +82,13 @@ public abstract class Packet {
         register(0x66, true, true, Packet102ClickWindow.class);             // 102
         register(0x67, true, true, Packet103SetWindowSlot.class);           // 103
         register(0x68, true, true, Packet104WindowItem.class);              // 104
+
+        register(0x69, true, true, Packet105FurnaceProgess.class);          // 105
+        register(0x6A, true, true, Packet106InventoryTransaction.class);    // 106
+        register(0x82, true, true, Packet130Sign.class);                    // 130
+        register(0x83, true, true, Packet131ItemData.class);                // 131
+        register(0xC8, true, true, Packet200Statistic.class);               // 200
+
 
         register(0xFA, true, true, PacketFAChannelMessage.class);           // 250
         register(0xFE, false, true, Packet254GetInfo.class);                // 254

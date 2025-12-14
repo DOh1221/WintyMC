@@ -1,6 +1,8 @@
 package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world;
 
 import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
@@ -8,109 +10,172 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
+@Getter
+@Setter
 public class Packet51MapChunk extends Packet {
 
-    private static final int CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
-    private static final int REDUCED_DEFLATE_THRESHOLD = CHUNK_SIZE / 4;
+    // 16 * 128 * 16 * 5 / 2 = blocks + meta + light + skylight
+    private static final int FULL_CHUNK_SIZE = 16 * 128 * 16 * 5 / 2;
+
+    private static final int REDUCED_DEFLATE_THRESHOLD = FULL_CHUNK_SIZE / 4;
     private static final int DEFLATE_LEVEL_CHUNKS = 6;
     private static final int DEFLATE_LEVEL_PARTS = 1;
-    private static final Deflater deflater = new Deflater();
-    private static byte[] deflateBuffer = new byte[CHUNK_SIZE + 100];
-    public int a;
-    public int b;
-    public int c;
-    public int d;
-    public int e;
-    public int f;
-    public byte[] g;
-    public int h;
+
+    private static final Deflater DEFLATER = new Deflater();
+    private static byte[] deflateBuffer = new byte[FULL_CHUNK_SIZE + 100];
+
+    public int chunkX;
+    public int chunkY; // always 0 in vanilla
+    public int chunkZ;
+
+    public int sizeX; // +1 on read
+    public int sizeY;
+    public int sizeZ;
+
+    public byte[] compressedData;
+    public int compressedSize;
+
     public byte[] rawData;
 
-    public Packet51MapChunk() {
+    public Packet51MapChunk() {}
 
+    public Packet51MapChunk(
+            int chunkX,
+            int chunkY,
+            int chunkZ,
+            int sizeX,
+            int sizeY,
+            int sizeZ,
+            byte[] rawData
+    ) {
+        this.chunkX = chunkX;
+        this.chunkY = chunkY;
+        this.chunkZ = chunkZ;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        this.sizeZ = sizeZ;
+        this.rawData = rawData;
     }
 
-    public Packet51MapChunk(int i, int j, int k, int l, int i1, int j1, byte[] data) {
-        this.a = i;
-        this.b = j;
-        this.c = k;
-        this.d = l;
-        this.e = i1;
-        this.f = j1;
-        this.rawData = data; // CraftBukkit
-    }
+    @Override
+    public void readData(ByteBuf in) throws IOException {
 
-    public static void compress(Packet51MapChunk mapChunk) {
+        this.chunkX = in.readInt();
+        this.chunkY = in.readShort();
+        this.chunkZ = in.readInt();
 
-        // If 'packet.g' is set then this packet has already been compressed.
-        if (mapChunk.g != null) {
-            return;
-        }
+        this.sizeX = in.readByte() + 1;
+        this.sizeY = in.readByte() + 1;
+        this.sizeZ = in.readByte() + 1;
 
-        int dataSize = mapChunk.rawData.length;
-        if (deflateBuffer.length < dataSize + 100) {
-            deflateBuffer = new byte[dataSize + 100];
-        }
+        this.compressedSize = in.readInt();
 
-        deflater.reset();
-        deflater.setLevel(dataSize < REDUCED_DEFLATE_THRESHOLD ? DEFLATE_LEVEL_PARTS : DEFLATE_LEVEL_CHUNKS);
-        deflater.setInput(mapChunk.rawData);
-        deflater.finish();
-        int size = deflater.deflate(deflateBuffer);
-        if (size == 0) {
-            size = deflater.deflate(deflateBuffer);
-        }
+        byte[] compressed = new byte[this.compressedSize];
+        in.readBytes(compressed);
 
-        // copy compressed data to packet
-        mapChunk.g = new byte[size];
-        mapChunk.h = size;
-        System.arraycopy(deflateBuffer, 0, mapChunk.g, 0, size);
-    }
+        int uncompressedSize = sizeX * sizeY * sizeZ * 5 / 2;
+        this.rawData = new byte[uncompressedSize];
 
-    public void readData(ByteBuf datainputstream) throws IOException { // CraftBukkit - throws IOEXception
-        this.a = datainputstream.readInt();
-        this.b = datainputstream.readShort();
-        this.c = datainputstream.readInt();
-        this.d = datainputstream.readByte() + 1;
-        this.e = datainputstream.readByte() + 1;
-        this.f = datainputstream.readByte() + 1;
-        this.h = datainputstream.readInt();
-        byte[] abyte = new byte[this.h];
-
-        datainputstream.readBytes(abyte);
-        this.g = new byte[this.d * this.e * this.f * 5 / 2];
         Inflater inflater = new Inflater();
-
-        inflater.setInput(abyte);
+        inflater.setInput(compressed);
 
         try {
-            inflater.inflate(this.g);
-        } catch (DataFormatException dataformatexception) {
-            throw new IOException("Bad compressed data format");
+            inflater.inflate(this.rawData);
+        } catch (DataFormatException e) {
+            throw new IOException("Bad compressed chunk data", e);
         } finally {
             inflater.end();
         }
     }
 
-    public void writeData(ByteBuf dataoutputstream) throws IOException { // CraftBukkit - throws IOException
-        dataoutputstream.writeInt(this.a);
-        dataoutputstream.writeShort(this.b);
-        dataoutputstream.writeInt(this.c);
-        dataoutputstream.writeByte(this.d - 1);
-        dataoutputstream.writeByte(this.e - 1);
-        dataoutputstream.writeByte(this.f - 1);
-        dataoutputstream.writeInt(this.h);
-        dataoutputstream.writeBytes(this.g);
+    @Override
+    public void writeData(ByteBuf out) throws IOException {
+
+        out.writeInt(this.chunkX);
+        out.writeShort(this.chunkY);
+        out.writeInt(this.chunkZ);
+
+        out.writeByte(this.sizeX - 1);
+        out.writeByte(this.sizeY - 1);
+        out.writeByte(this.sizeZ - 1);
+
+        out.writeInt(this.compressedSize);
+        out.writeBytes(this.compressedData);
     }
 
     @Override
     public void handle(PacketHandler handler) {
-
+        handler.handle(this);
     }
 
     @Override
     public int size() {
-        return 0;
+        return 17 + this.compressedSize;
     }
+
+    public static void compress(Packet51MapChunk packet) {
+
+        if (packet.compressedData != null) {
+            return;
+        }
+
+        int dataSize = packet.rawData.length;
+
+        if (deflateBuffer.length < dataSize + 100) {
+            deflateBuffer = new byte[dataSize + 100];
+        }
+
+        DEFLATER.reset();
+        DEFLATER.setLevel(
+                dataSize < REDUCED_DEFLATE_THRESHOLD
+                        ? DEFLATE_LEVEL_PARTS
+                        : DEFLATE_LEVEL_CHUNKS
+        );
+
+        DEFLATER.setInput(packet.rawData);
+        DEFLATER.finish();
+
+        int size = DEFLATER.deflate(deflateBuffer);
+        if (size == 0) {
+            size = DEFLATER.deflate(deflateBuffer);
+        }
+
+        packet.compressedSize = size;
+        packet.compressedData = new byte[size];
+        System.arraycopy(deflateBuffer, 0, packet.compressedData, 0, size);
+    }
+
+    public static void decompress(Packet51MapChunk packet) throws IOException {
+
+        if (packet.rawData != null) {
+            return;
+        }
+
+        if (packet.compressedData == null || packet.compressedSize <= 0) {
+            throw new IllegalStateException("Packet has no compressed data");
+        }
+
+        int expectedSize = packet.sizeX * packet.sizeY * packet.sizeZ * 5 / 2;
+        byte[] out = new byte[expectedSize];
+
+        Inflater inflater = new Inflater();
+        inflater.setInput(packet.compressedData, 0, packet.compressedSize);
+
+        try {
+            int inflated = inflater.inflate(out);
+            if (inflated != expectedSize) {
+                throw new IOException(
+                        "Invalid decompressed size: " + inflated +
+                                ", expected: " + expectedSize
+                );
+            }
+        } catch (DataFormatException e) {
+            throw new IOException("Bad compressed chunk data", e);
+        } finally {
+            inflater.end();
+        }
+
+        packet.rawData = out;
+    }
+
 }

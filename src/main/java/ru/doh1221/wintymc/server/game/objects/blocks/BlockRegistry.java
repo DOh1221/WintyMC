@@ -142,7 +142,7 @@ public class BlockRegistry {
                 return block;
             }
         }
-        System.out.println("Can't find " + blockName); // временно. Не хочу сейчас оборачивать всё в Object.notNUll и тд
+        // временно. Не хочу сейчас оборачивать всё в Object.notNUll и тд
         return new BlockBase(0, "air");
     }
 

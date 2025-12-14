@@ -12,9 +12,9 @@ public class Packet21SpawnItemEntity extends Packet {
     public short itemID;
     public byte count;
     public short damage;
-    public byte x;
-    public byte y;
-    public byte z;
+    public int x;
+    public int y;
+    public int z;
     public byte yaw;
     public byte pitch;
     public byte roll;
@@ -25,9 +25,9 @@ public class Packet21SpawnItemEntity extends Packet {
         this.itemID = in.readShort();
         this.count = in.readByte();
         this.damage = in.readShort();
-        this.x = in.readByte();
-        this.y = in.readByte();
-        this.z = in.readByte();
+        this.x = in.readInt();
+        this.y = in.readInt();
+        this.z = in.readInt();
         this.yaw = in.readByte();
         this.pitch = in.readByte();
         this.roll = in.readByte();
@@ -39,9 +39,9 @@ public class Packet21SpawnItemEntity extends Packet {
         out.writeShort(this.itemID);
         out.writeByte(this.count);
         out.writeShort(this.damage);
-        out.writeByte(this.x);
-        out.writeByte(this.y);
-        out.writeByte(this.z);
+        out.writeInt(this.x);
+        out.writeInt(this.y);
+        out.writeInt(this.z);
         out.writeByte(this.yaw);
         out.writeByte(this.pitch);
         out.writeByte(this.roll);

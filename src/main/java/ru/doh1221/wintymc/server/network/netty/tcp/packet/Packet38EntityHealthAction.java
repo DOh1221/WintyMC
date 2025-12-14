@@ -1,32 +1,34 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
 
-public class Packet104WindowItem extends Packet {
+public class Packet38EntityHealthAction extends Packet {
 
-    public byte worldInfo = 0;
+    public int entityID;
+    public byte actionID;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-
+        this.entityID = in.readInt();
+        this.actionID = in.readByte();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        System.out.println("NOT IMPLEMENTED YES");
+        out.writeInt(this.entityID);
+        out.writeByte(this.actionID);
     }
 
     @Override
     public void handle(PacketHandler handler) {
-        handler.handle(this);
+
     }
 
     @Override
     public int size() {
-        return 0x64;
+        return 0;
     }
 }

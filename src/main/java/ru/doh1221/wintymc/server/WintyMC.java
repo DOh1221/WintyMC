@@ -20,6 +20,7 @@ import ru.doh1221.wintymc.server.network.netty.PipelineUtils;
 import ru.doh1221.wintymc.server.utils.location.View3D;
 
 import java.net.InetSocketAddress;
+import java.util.Random;
 import java.util.concurrent.ThreadFactory;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -156,7 +157,7 @@ public class WintyMC {
 
         // TODO Загрузка миров
 
-        world = new World(new View3D(0, 0, 0, 0.0F, 0.0F), new StoneGen(), 123);
+        world = new World(new View3D(0, 0, 0, 0.0F, 0.0F), new StoneGen(), new Random().nextInt());
         world.initialize();
         world.startTicking();
 

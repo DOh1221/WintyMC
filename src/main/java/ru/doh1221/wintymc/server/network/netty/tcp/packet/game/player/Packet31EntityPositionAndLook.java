@@ -8,16 +8,16 @@ import java.io.IOException;
 
 public class Packet31EntityPositionAndLook extends Packet {
 
-    public byte worldInfo = 0;
+    public int entityID;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+
     }
 
     @Override

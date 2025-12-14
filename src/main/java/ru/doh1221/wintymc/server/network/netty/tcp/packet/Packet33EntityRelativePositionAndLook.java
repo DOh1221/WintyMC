@@ -1,28 +1,24 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
 
-public class Packet24SpawnMobEntity extends Packet {
-
+public class Packet33EntityRelativePositionAndLook extends Packet {
     public int entityID;
-    public byte mobType;
-    public int x;
-    public int y;
-    public int z;
+    public byte x;
+    public byte y;
+    public byte z;
     public byte yaw;
     public byte pitch;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
         this.entityID = in.readInt();
-        this.mobType = in.readByte();
-        this.x = in.readInt();
-        this.y = in.readInt();
-        this.z = in.readInt();
+        this.x = in.readByte();
+        this.y = in.readByte();
+        this.z = in.readByte();
         this.yaw = in.readByte();
         this.pitch = in.readByte();
     }
@@ -30,14 +26,12 @@ public class Packet24SpawnMobEntity extends Packet {
     @Override
     public void writeData(ByteBuf out) throws IOException {
         out.writeInt(this.entityID);
-        out.writeByte(this.mobType);
-        out.writeInt(this.x);
-        out.writeInt(this.y);
-        out.writeInt(this.z);
+        out.writeByte(this.x);
+        out.writeByte(this.y);
+        out.writeByte(this.z);
         out.writeByte(this.yaw);
         out.writeByte(this.pitch);
     }
-
 
     @Override
     public void handle(PacketHandler handler) {
@@ -46,6 +40,6 @@ public class Packet24SpawnMobEntity extends Packet {
 
     @Override
     public int size() {
-        return 0x1B;
+        return 0;
     }
 }

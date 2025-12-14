@@ -1,35 +1,36 @@
-package ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world;
+package ru.doh1221.wintymc.server.network.netty.tcp.packet;
 
 import io.netty.buffer.ByteBuf;
 import ru.doh1221.wintymc.server.network.netty.tcp.PacketHandler;
-import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
+import ru.doh1221.wintymc.server.utils.Stream;
 
 import java.io.IOException;
 
-public class Packet14BlockDestroy extends Packet {
+public class Packet130Sign extends Packet {
 
-    public byte status;
     public int x;
-    public byte y;
+    public short y;
     public int z;
-    public byte face;
+    public String[] lines = new String[]{"", "", "", ""};
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.status = in.readByte();
         this.x = in.readInt();
-        this.y = in.readByte();
+        this.y = in.readShort();
         this.z = in.readInt();
-        this.face = in.readByte();
+        for(int x = 0; x < lines.length; x++) {
+            lines[x] = Stream.readString(in, false);
+        }
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.status);
         out.writeInt(this.x);
-        out.writeByte(this.y);
+        out.writeShort(this.y);
         out.writeInt(this.z);
-        out.writeByte(this.face);
+        for (String line : lines) {
+            Stream.writeString(line, out, false);
+        }
     }
 
     @Override
@@ -39,6 +40,6 @@ public class Packet14BlockDestroy extends Packet {
 
     @Override
     public int size() {
-        return 14;
+        return 0;
     }
 }

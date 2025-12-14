@@ -6,18 +6,18 @@ import ru.doh1221.wintymc.server.network.netty.tcp.packet.Packet;
 
 import java.io.IOException;
 
-public class Packet104WindowItem extends Packet {
+public class Packet40EntityMetadata extends Packet {
 
     public byte worldInfo = 0;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-
+        System.out.println("CANT HANDLE IT YET");
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        System.out.println("NOT IMPLEMENTED YES");
+
     }
 
     @Override
@@ -27,6 +27,6 @@ public class Packet104WindowItem extends Packet {
 
     @Override
     public int size() {
-        return 0x64;
+        return 0x35;
     }
 }

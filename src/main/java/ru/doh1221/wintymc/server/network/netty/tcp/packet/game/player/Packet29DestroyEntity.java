@@ -8,16 +8,16 @@ import java.io.IOException;
 
 public class Packet29DestroyEntity extends Packet {
 
-    public byte worldInfo = 0;
+    public int entityID;
 
     @Override
     public void readData(ByteBuf in) throws IOException {
-        this.worldInfo = in.readByte();
+        this.entityID = in.readInt();
     }
 
     @Override
     public void writeData(ByteBuf out) throws IOException {
-        out.writeByte(this.worldInfo);
+        out.writeInt(this.entityID);
     }
 
     @Override

@@ -5,6 +5,7 @@ import lombok.Setter;
 import ru.doh1221.wintymc.server.entity.Player;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkGenerator;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkProvider;
+import ru.doh1221.wintymc.server.game.world.implement.OverWorldGenerator;
 import ru.doh1221.wintymc.server.game.world.implement.ServerChunkProvider;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet6SpawnPosition;
 
@@ -22,14 +23,16 @@ public class World {
 
     //test
     @Getter
-    public WorldChunkManager worldChunkManager = new WorldChunkManager();
+    public WorldChunkManager worldChunkManager;
 
     public World(String worldName, long seed, IChunkGenerator generator) {
         this.worldName = worldName;
         this.rng = new Random(seed);
         this.seed = seed;
         this.chunkGenerator = generator;
-        this.chunkProvider = new ServerChunkProvider(generator, this);
+        //test
+        this.worldChunkManager = new WorldChunkManager(this);
+        this.chunkProvider = new OverWorldGenerator(this, seed);
     }
 
     public void playerJoinedWorld(Player player) {

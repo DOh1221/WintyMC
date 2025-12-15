@@ -16,8 +16,6 @@ import java.util.List;
 public class InGameHandler extends ConnectionHandler {
 
     public Player player;
-    private double lastChunkUpdateX;
-    private double lastChunkUpdateZ;
 
     public InGameHandler(Player player) {
         this.player = player;
@@ -50,11 +48,11 @@ public class InGameHandler extends ConnectionHandler {
         int cx = ChunkUtils.toChunk(player.position.getX());
         int cz = ChunkUtils.toChunk(player.position.getZ());
 
-        int radius = player.chunkManager.getRadius();
+        int radius = player.getChunkManager().getRadius();
 
-        List<int[]> spiral = player.chunkManager.spiralChunks(cx, cz, radius);
+        List<int[]> spiral = player.getChunkManager().spiralChunks(cx, cz, radius);
         for (int[] p : spiral) {
-            player.chunkManager.requestChunkAsync(
+            player.getChunkManager().requestChunkAsync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
@@ -75,37 +73,37 @@ public class InGameHandler extends ConnectionHandler {
     }
 
     private void handleChunkMovement() {
-        double dx = player.position.getX() - lastChunkUpdateX;
-        double dz = player.position.getZ() - lastChunkUpdateZ;
+        double dx = player.position.getX() - player.getChunkManager().getLastChunkUpdateX();
+        double dz = player.position.getZ() - player.getChunkManager().getLastChunkUpdateZ();
 
         if (dx * dx + dz * dz < 64.0) {
             return;
         }
 
-        lastChunkUpdateX = player.position.getX();
-        lastChunkUpdateZ = player.position.getZ();
+        player.getChunkManager().setLastChunkUpdateX(player.position.getX());
+        player.getChunkManager().setLastChunkUpdateZ(player.position.getZ());
 
         int newCX = ChunkUtils.toChunk(player.position.getX());
         int newCZ = ChunkUtils.toChunk(player.position.getZ());
-        int radius = player.chunkManager.getRadius();
+        int radius = player.getChunkManager().getRadius();
 
-        List<int[]> spiral = player.chunkManager.spiralChunks(newCX, newCZ, radius);
+        List<int[]> spiral = player.getChunkManager().spiralChunks(newCX, newCZ, radius);
         for (int[] p : spiral) {
-            player.chunkManager.requestChunkAsync(
+            player.getChunkManager().requestChunkAsync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
             );
         }
 
-        List<Long> loaded = new ArrayList<>(player.chunkManager.getLoadedChunks());
+        List<Long> loaded = new ArrayList<>(player.getChunkManager().getLoadedChunks());
         for (long key : loaded) {
-            int cx = LongHash.lsw(key);
-            int cz = LongHash.msw(key);
+            int cx = LongHash.msw(key);
+            int cz = LongHash.lsw(key);
 
             if (Math.abs(cx - newCX) > radius ||
                     Math.abs(cz - newCZ) > radius) {
-                player.chunkManager.unloadChunk(cx, cz);
+                player.getChunkManager().unloadChunk(cx, cz);
             }
         }
     }

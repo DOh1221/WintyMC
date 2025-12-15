@@ -16,15 +16,16 @@ import java.util.UUID;
 public class Player extends Entity {
 
     public String username;
-    public UUID uuid = UUID.randomUUID();
+    public final UUID uuid = UUID.randomUUID();
     @Setter
     public String displayname;
     @Setter
     public double health = 0.0;
-    @Setter
+    @Getter
     public View3D position;
-    public ChannelWrapper connection;
-    public ChunkManager chunkManager;
+    public final ChannelWrapper connection;
+    @Getter
+    private final ChunkManager chunkManager;
 
     public Player(ChannelWrapper connection) {
         this.connection = connection;

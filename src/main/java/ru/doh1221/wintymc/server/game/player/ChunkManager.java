@@ -1,6 +1,7 @@
 package ru.doh1221.wintymc.server.game.player;
 
 import lombok.Getter;
+import lombok.Setter;
 import ru.doh1221.wintymc.server.WintyMC;
 import ru.doh1221.wintymc.server.entity.Player;
 import ru.doh1221.wintymc.server.game.world.World;
@@ -23,6 +24,12 @@ public class ChunkManager {
 
     private final ConcurrentMap<Long, CompletableFuture<Chunk>> pendingFutures = new ConcurrentHashMap<>();
     private final Executor sendExecutor;
+    @Getter
+    @Setter
+    private double lastChunkUpdateX;
+    @Getter
+    @Setter
+    private double lastChunkUpdateZ;
 
     @Getter
     private volatile int radius;

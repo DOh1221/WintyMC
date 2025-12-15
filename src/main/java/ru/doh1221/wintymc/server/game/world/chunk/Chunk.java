@@ -22,7 +22,7 @@ public class Chunk {
     @Getter
     private final int chunkZ;
 
-    private byte[] blocks;
+    public byte[] blocks;
     private NibbleArray metadata;
     private NibbleArray blockLight;
     private NibbleArray skyLight;
@@ -36,7 +36,7 @@ public class Chunk {
         this.blockLight = new NibbleArray(TOTAL_BLOCKS);
         this.skyLight = new NibbleArray(TOTAL_BLOCKS);
 
-        //recalculateHeightMap();
+        recalculateHeightMap();
     }
 
     public Chunk(int chunkX, int chunkZ) {

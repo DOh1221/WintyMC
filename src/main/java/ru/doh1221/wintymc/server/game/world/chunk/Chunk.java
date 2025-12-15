@@ -14,7 +14,7 @@ public class Chunk {
 
     static {
         EMPTY_BLOCKS = new byte[TOTAL_BLOCKS];
-        Arrays.fill(EMPTY_BLOCKS, (byte) 0xFF);
+        Arrays.fill(EMPTY_BLOCKS, (byte) 0);
     }
 
     @Getter

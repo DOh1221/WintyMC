@@ -32,11 +32,11 @@ public class ChunkManager {
     private final BiConsumer<Integer, Integer> onChunkReady;
 
     public ChunkManager(Player player) {
-        this(player, WintyMC.getInstance().getChunkIO(), 10, null);
+        this(player, WintyMC.getInstance().getChunkIO(), 3, null);
     }
 
     public ChunkManager(Player player, ExecutorService chunkIO) {
-        this(player, chunkIO, 10, null);
+        this(player, chunkIO, 3, null);
     }
 
     public ChunkManager(Player player, ExecutorService chunkIO, int radius, BiConsumer<Integer, Integer> onChunkReady) {
@@ -89,9 +89,6 @@ public class ChunkManager {
             loadedChunks.add(key);
             pendingChunks.remove(key);
 
-            Packet50PreChunk destroy = new Packet50PreChunk(cx, cz, false);
-            player.connection.write(destroy);
-            player.connection.write(pre);
             sendChunk(chunk);
 
             if (onChunkReady != null) onChunkReady.accept(cx, cz);

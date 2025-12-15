@@ -10,6 +10,9 @@ import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.world.Packet4Worl
 import ru.doh1221.wintymc.server.utils.ChunkUtils;
 import ru.doh1221.wintymc.server.utils.LongHash;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InGameHandler extends ConnectionHandler {
 
     public Player player;
@@ -47,21 +50,17 @@ public class InGameHandler extends ConnectionHandler {
 
         int radius = player.chunkManager.getRadius();
 
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int ccx = cx + dx;
-                int ccz = cz + dz;
-
-                player.chunkManager.requestChunkAsync(
-                        WintyMC.getInstance().world,
-                        ccx,
-                        ccz
-                );
-            }
+        List<int[]> spiral = player.chunkManager.spiralChunks(cx, cz, radius);
+        for (int[] p : spiral) {
+            player.chunkManager.requestChunkAsync(
+                    WintyMC.getInstance().world,
+                    p[0],
+                    p[1]
+            );
         }
     }
 
-/*
+
     @Override
     public void handle(Packet11PlayerPosition pos) {
         double oldX = player.position.getX();
@@ -84,46 +83,38 @@ public class InGameHandler extends ConnectionHandler {
         );
 
         handleChunkMovement(oldX, oldZ);
-    }*/
+    }
 
     private void handleChunkMovement(double oldX, double oldZ) {
-        int oldCX = ChunkUtils.toChunk(oldX);
-        int oldCZ = ChunkUtils.toChunk(oldZ);
-
-        int newCX = ChunkUtils.toChunk(player.position.getX());
-        int newCZ = ChunkUtils.toChunk(player.position.getZ());
-
-        if (oldCX == newCX && oldCZ == newCZ) {
+        double dx = player.position.getX() - oldX;
+        double dz = player.position.getZ() - oldZ;
+        double dist2 = dx * dx + dz * dz;
+        if (dist2 < 64.0) {
             return;
         }
 
+        int newCX = ChunkUtils.toChunk(player.position.getX());
+        int newCZ = ChunkUtils.toChunk(player.position.getZ());
         int radius = player.chunkManager.getRadius();
 
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                int cx = newCX + dx;
-                int cz = newCZ + dz;
-
-                player.chunkManager.requestChunkAsync(
-                        WintyMC.getInstance().world,
-                        cx,
-                        cz
-                );
-            }
+        List<int[]> spiral = player.chunkManager.spiralChunks(newCX, newCZ, radius);
+        for (int[] p : spiral) {
+            player.chunkManager.requestChunkAsync(
+                    WintyMC.getInstance().world,
+                    p[0],
+                    p[1]
+            );
         }
-
-        player.chunkManager.getLoadedChunks().forEach(key -> {
+        List<Long> loaded = new ArrayList<>(player.chunkManager.getLoadedChunks());
+        for (long key : loaded) {
             int cx = LongHash.lsw(key);
             int cz = LongHash.msw(key);
 
-            if (Math.abs(cx - newCX) > radius ||
-                    Math.abs(cz - newCZ) > radius) {
-
+            if (Math.abs(cx - newCX) > radius || Math.abs(cz - newCZ) > radius) {
                 player.chunkManager.unloadChunk(cx, cz);
             }
-        });
+        }
     }
-
 
     @Override
     public String toString() {

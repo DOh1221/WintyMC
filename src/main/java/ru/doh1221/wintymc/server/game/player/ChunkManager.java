@@ -22,6 +22,7 @@ public class ChunkManager {
     private final Set<Long> pendingChunks;
 
     private final ConcurrentMap<Long, CompletableFuture<Chunk>> pendingFutures = new ConcurrentHashMap<>();
+    private final Executor sendExecutor;
 
     @Getter
     private volatile int radius;
@@ -46,6 +47,7 @@ public class ChunkManager {
         this.onChunkReady = onChunkReady;
         this.loadedChunks = ConcurrentHashMap.newKeySet();
         this.pendingChunks = ConcurrentHashMap.newKeySet();
+        this.sendExecutor = Executors.newSingleThreadExecutor();
     }
 
     public void requestChunkAsync(World world, int cx, int cz) {
@@ -53,23 +55,29 @@ public class ChunkManager {
 
         if (loadedChunks.contains(key)) return;
         if (pendingChunks.contains(key)) return;
-
         if (!isChunkInView(cx, cz)) return;
 
         pendingChunks.add(key);
 
-        Packet50PreChunk pre = new Packet50PreChunk(cx, cz, true);
-        player.connection.write(pre);
+        sendExecutor.execute(() -> {
+            if (!player.isOnline()) return;
 
-        sendChunk(Chunk.empty(cx, cz));
+            player.connection.write(new Packet50PreChunk(cx, cz, true));
+            sendChunk(Chunk.empty(cx, cz));
+        });
 
-        CompletableFuture<Chunk> future = CompletableFuture.supplyAsync(() -> world.getChunkProvider().getOrCreate(cx, cz), chunkIO);
+        CompletableFuture<Chunk> future =
+                CompletableFuture.supplyAsync(
+                        () -> world.getChunkProvider().getOrCreate(cx, cz),
+                        chunkIO
+                );
 
         pendingFutures.put(key, future);
 
         future.whenComplete((chunk, ex) -> {
             pendingFutures.remove(key);
-            if (!player.isOnline()) {
+
+            if (ex != null || !player.isOnline()) {
                 pendingChunks.remove(key);
                 return;
             }
@@ -80,20 +88,21 @@ public class ChunkManager {
                 return;
             }
 
-            if (ex != null) {
-                pendingChunks.remove(key);
-                ex.printStackTrace();
-                return;
-            }
-
             loadedChunks.add(key);
             pendingChunks.remove(key);
 
-            sendChunk(chunk);
+            sendExecutor.execute(() -> {
+                if (!player.isOnline()) return;
+                if (!loadedChunks.contains(key)) return;
 
-            if (onChunkReady != null) onChunkReady.accept(cx, cz);
+                sendChunk(chunk);
+
+                if (onChunkReady != null)
+                    onChunkReady.accept(cx, cz);
+            });
         });
     }
+
 
     public void requestChunkSync(World world, int cx, int cz) {
         long key = LongHash.toLong(cx, cz);
@@ -117,16 +126,6 @@ public class ChunkManager {
     }
 
     public void sendChunk(Chunk chunk) {
-        int playerCX = ChunkUtils.toChunk(player.position.getX());
-        int playerCZ = ChunkUtils.toChunk(player.position.getZ());
-
-        int dx = Math.abs(chunk.getChunkX() - playerCX);
-        int dz = Math.abs(chunk.getChunkZ() - playerCZ);
-
-        if (dx > radius || dz > radius) {
-            return;
-        }
-
         Packet51MapChunk pkt = Chunk.toPacketData(chunk);
         Packet51MapChunk.compress(pkt);
         player.connection.write(pkt);

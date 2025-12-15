@@ -16,6 +16,8 @@ import java.util.List;
 public class InGameHandler extends ConnectionHandler {
 
     public Player player;
+    private double lastChunkUpdateX;
+    private double lastChunkUpdateZ;
 
     public InGameHandler(Player player) {
         this.player = player;
@@ -60,38 +62,28 @@ public class InGameHandler extends ConnectionHandler {
         }
     }
 
-
     @Override
     public void handle(Packet11PlayerPosition pos) {
-        double oldX = player.position.getX();
-        double oldZ = player.position.getZ();
-
         player.position.set(pos.x, pos.y, pos.z);
-
-        handleChunkMovement(oldX, oldZ);
+        handleChunkMovement();
     }
 
     @Override
     public void handle(Packet13PlayerPositionLook pos) {
-        double oldX = player.position.getX();
-        double oldZ = player.position.getZ();
-
-        player.position.set(
-                pos.x,
-                pos.y,
-                pos.z
-        );
-
-        handleChunkMovement(oldX, oldZ);
+        player.position.set(pos.x, pos.y, pos.z);
+        handleChunkMovement();
     }
 
-    private void handleChunkMovement(double oldX, double oldZ) {
-        double dx = player.position.getX() - oldX;
-        double dz = player.position.getZ() - oldZ;
-        double dist2 = dx * dx + dz * dz;
-        if (dist2 < 64.0) {
+    private void handleChunkMovement() {
+        double dx = player.position.getX() - lastChunkUpdateX;
+        double dz = player.position.getZ() - lastChunkUpdateZ;
+
+        if (dx * dx + dz * dz < 64.0) {
             return;
         }
+
+        lastChunkUpdateX = player.position.getX();
+        lastChunkUpdateZ = player.position.getZ();
 
         int newCX = ChunkUtils.toChunk(player.position.getX());
         int newCZ = ChunkUtils.toChunk(player.position.getZ());
@@ -105,12 +97,14 @@ public class InGameHandler extends ConnectionHandler {
                     p[1]
             );
         }
+
         List<Long> loaded = new ArrayList<>(player.chunkManager.getLoadedChunks());
         for (long key : loaded) {
             int cx = LongHash.lsw(key);
             int cz = LongHash.msw(key);
 
-            if (Math.abs(cx - newCX) > radius || Math.abs(cz - newCZ) > radius) {
+            if (Math.abs(cx - newCX) > radius ||
+                    Math.abs(cz - newCZ) > radius) {
                 player.chunkManager.unloadChunk(cx, cz);
             }
         }

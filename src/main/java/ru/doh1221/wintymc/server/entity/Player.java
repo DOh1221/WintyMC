@@ -29,6 +29,7 @@ public class Player extends Entity {
     public Player(ChannelWrapper connection) {
         this.connection = connection;
         this.chunkManager = new ChunkManager(this);
+        this.chunkManager.setRadius(15);
     }
 
     public void kick(String disconnectReason) {

@@ -27,7 +27,7 @@ public class StoneGen implements IChunkGenerator {
 
     @Override
     public View3D getSpawnPosition() {
-        return new View3D(0, 10, 0, 0, 0);
+        return new View3D(0, 400, 0, 0, 0);
     }
 
 }

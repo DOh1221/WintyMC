@@ -5,6 +5,7 @@ import ru.doh1221.wintymc.server.game.world.World;
 import ru.doh1221.wintymc.server.game.world.chunk.Chunk;
 import ru.doh1221.wintymc.server.game.world.chunk.IChunkProvider;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class OverWorldGenerator implements IChunkProvider {
@@ -204,7 +205,6 @@ public class OverWorldGenerator implements IChunkProvider {
         this.j.setSeed((long) i * 341873128712L + (long) j * 132897987541L);
         byte[] abyte = new byte['\u8000'];
         Chunk chunk = new Chunk(i, j, abyte);
-
         this.v = this.p.getWorldChunkManager().a(this.v, i * 16, j * 16, 16, 16);
         double[] adouble = this.p.getWorldChunkManager().temperature;
 
@@ -343,7 +343,7 @@ public class OverWorldGenerator implements IChunkProvider {
 
         int j2;
 
-        d0 = 0.5D;
+                d0 = 0.5D;
         k1 = (int) ((this.c.a((double) k * d0, (double) l * d0) / 8.0D + this.j.nextDouble() * 4.0D + 4.0D) / 3.0D);
         l1 = 0;
         if (this.j.nextInt(10) == 0) {

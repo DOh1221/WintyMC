@@ -24,20 +24,17 @@ public class ChunkManager {
 
     private final ConcurrentMap<Long, CompletableFuture<Chunk>> pendingFutures = new ConcurrentHashMap<>();
     private final Executor sendExecutor;
+    private final Player player;
+    private final ExecutorService chunkIO;
+    private final BiConsumer<Integer, Integer> onChunkReady;
     @Getter
     @Setter
     private double lastChunkUpdateX;
     @Getter
     @Setter
     private double lastChunkUpdateZ;
-
     @Getter
     private volatile int radius;
-    private final Player player;
-
-    private final ExecutorService chunkIO;
-
-    private final BiConsumer<Integer, Integer> onChunkReady;
 
     public ChunkManager(Player player) {
         this(player, WintyMC.getInstance().getChunkIO(), 3, null);
@@ -48,13 +45,14 @@ public class ChunkManager {
     }
 
     public ChunkManager(Player player, ExecutorService chunkIO, int radius, BiConsumer<Integer, Integer> onChunkReady) {
-        this.player = Objects.requireNonNull(player);
-        this.chunkIO = Objects.requireNonNull(chunkIO);
+        this.player = Objects.requireNonNull(player, "player");
+        this.chunkIO = Objects.requireNonNull(chunkIO, "chunkIO");
         this.radius = Math.max(3, radius);
         this.onChunkReady = onChunkReady;
         this.loadedChunks = ConcurrentHashMap.newKeySet();
         this.pendingChunks = ConcurrentHashMap.newKeySet();
-        this.sendExecutor = Executors.newSingleThreadExecutor();
+
+        this.sendExecutor = Executors.newSingleThreadExecutor(r -> new Thread(r, "ChunkSend-" + player.getUsername()));
     }
 
     public void requestChunkAsync(World world, int cx, int cz) {
@@ -65,33 +63,27 @@ public class ChunkManager {
         if (!isChunkInView(cx, cz)) return;
 
         pendingChunks.add(key);
-
         sendExecutor.execute(() -> {
-            if (!player.isOnline()) return;
-
             player.connection.write(new Packet50PreChunk(cx, cz, true));
-            sendChunk(Chunk.empty(cx, cz));
+            sendChunkInternal(Chunk.empty(cx, cz));
         });
 
-        CompletableFuture<Chunk> future =
-                CompletableFuture.supplyAsync(
-                        () -> world.getChunkProvider().getOrCreate(cx, cz),
-                        chunkIO
-                );
+        CompletableFuture<Chunk> future = CompletableFuture.supplyAsync(() -> world.getChunkProvider().getOrCreate(cx, cz), chunkIO);
 
         pendingFutures.put(key, future);
 
         future.whenComplete((chunk, ex) -> {
             pendingFutures.remove(key);
 
-            if (ex != null || !player.isOnline()) {
+            if (ex != null) {
                 pendingChunks.remove(key);
+                ex.printStackTrace();
                 return;
             }
 
             if (!isChunkInView(cx, cz)) {
                 pendingChunks.remove(key);
-                unloadChunk(cx, cz);
+                sendExecutor.execute(() -> unloadChunkInternal(cx, cz));
                 return;
             }
 
@@ -99,17 +91,20 @@ public class ChunkManager {
             pendingChunks.remove(key);
 
             sendExecutor.execute(() -> {
-                if (!player.isOnline()) return;
                 if (!loadedChunks.contains(key)) return;
 
-                sendChunk(chunk);
+                sendChunkInternal(chunk);
 
-                if (onChunkReady != null)
-                    onChunkReady.accept(cx, cz);
+                if (onChunkReady != null) {
+                    try {
+                        onChunkReady.accept(cx, cz);
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
+                }
             });
         });
     }
-
 
     public void requestChunkSync(World world, int cx, int cz) {
         long key = LongHash.toLong(cx, cz);
@@ -117,43 +112,53 @@ public class ChunkManager {
         if (loadedChunks.contains(key)) return;
         if (!isChunkInView(cx, cz)) return;
 
-        Packet50PreChunk pre = new Packet50PreChunk(cx, cz, true);
-        player.connection.write(pre);
-
         try {
             Chunk chunk = world.getChunkProvider().getOrCreate(cx, cz);
-            chunk.recalculateHeightMap();
+            if (chunk != null) chunk.recalculateHeightMap();
+
             loadedChunks.add(key);
-            sendChunk(chunk);
-            if (onChunkReady != null) onChunkReady.accept(cx, cz);
+            pendingChunks.remove(key);
+
+            sendExecutor.execute(() -> {
+                if (!player.isOnline()) return;
+                player.connection.write(new Packet50PreChunk(cx, cz, true));
+                sendChunkInternal(chunk);
+                if (onChunkReady != null) onChunkReady.accept(cx, cz);
+            });
         } catch (Exception ex) {
             ex.printStackTrace();
-            unloadChunk(cx, cz);
+            sendExecutor.execute(() -> unloadChunkInternal(cx, cz));
         }
     }
 
-    public void sendChunk(Chunk chunk) {
+    private void sendChunkInternal(Chunk chunk) {
+        if (chunk == null) return;
+        chunk.initLighting();
+
         Packet51MapChunk pkt = Chunk.toPacketData(chunk);
         Packet51MapChunk.compress(pkt);
+
         player.connection.write(pkt);
     }
 
-    public void unloadChunk(int cx, int cz) {
+    private void unloadChunkInternal(int cx, int cz) {
         long key = LongHash.toLong(cx, cz);
 
         CompletableFuture<Chunk> fut = pendingFutures.remove(key);
-        if (fut != null) {
-            fut.cancel(true);
-        }
+        if (fut != null) fut.cancel(true);
+
         pendingChunks.remove(key);
         loadedChunks.remove(key);
 
-        Packet50PreChunk pre = new Packet50PreChunk(cx, cz, false);
-        player.connection.write(pre);
+        player.connection.write(new Packet50PreChunk(cx, cz, false));
+    }
+
+
+    public void unloadChunk(int cx, int cz) {
+        sendExecutor.execute(() -> unloadChunkInternal(cx, cz));
     }
 
     public void clearAll() {
-        // cancel all
         for (Map.Entry<Long, CompletableFuture<Chunk>> e : pendingFutures.entrySet()) {
             e.getValue().cancel(true);
         }
@@ -166,6 +171,10 @@ public class ChunkManager {
         int pcx = ChunkUtils.toChunk(player.position.getX());
         int pcz = ChunkUtils.toChunk(player.position.getZ());
         return Math.abs(cx - pcx) <= radius && Math.abs(cz - pcz) <= radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = Math.max(3, radius);
     }
 
     public List<int[]> spiralChunks(int centerX, int centerZ, int radius) {
@@ -190,7 +199,4 @@ public class ChunkManager {
         return out;
     }
 
-    public void setRadius(int radius) {
-        this.radius = Math.max(3, radius);
-    }
 }

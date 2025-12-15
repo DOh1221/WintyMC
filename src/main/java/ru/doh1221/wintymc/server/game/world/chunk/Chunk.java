@@ -10,6 +10,8 @@ public class Chunk {
     public static final int SIZE = 16;
     public static final int HEIGHT = 128;
     public static final int TOTAL_BLOCKS = SIZE * SIZE * HEIGHT;
+    private static final int MAX_LIGHT = 15;
+
     private static final byte[] EMPTY_BLOCKS;
 
     static {
@@ -45,7 +47,7 @@ public class Chunk {
     }
 
     public static Chunk empty(int cx, int cz) {
-        return new Chunk(cx, cz, EMPTY_BLOCKS);
+        return new Chunk(cx, cz, EMPTY_BLOCKS.clone());
     }
 
     public static int index(int x, int y, int z) {
@@ -112,6 +114,65 @@ public class Chunk {
             }
         }
     }
+
+    public void initLighting() {
+        initSkyLight();
+        initBlockLight();
+    }
+
+    private void initSkyLight() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int z = 0; z < SIZE; z++) {
+
+                int height = Byte.toUnsignedInt(heightMap[z * SIZE + x]);
+                int light = MAX_LIGHT;
+
+                // сверху вниз
+                for (int y = HEIGHT - 1; y >= 0; y--) {
+
+                    if (y < height) {
+                        light -= getLightOpacity(x, y, z);
+                        if (light < 0) light = 0;
+                    }
+
+                    skyLight.set(x, y, z, (byte) light);
+
+                    if (light == 0 && y < height) {
+                        break; // ниже уже света не будет
+                    }
+                }
+            }
+        }
+    }
+
+    private void initBlockLight() {
+        for (int x = 0; x < SIZE; x++) {
+            for (int z = 0; z < SIZE; z++) {
+                for (int y = 0; y < HEIGHT; y++) {
+
+                    int id = Byte.toUnsignedInt(getBlock(x, y, z));
+                    int emitted = getBlockLightValue(id);
+
+                    if (emitted > 0) {
+                        blockLight.set(x, y, z, (byte) emitted);
+                    }
+                }
+            }
+        }
+    }
+
+    private int getLightOpacity(int x, int y, int z) {
+        int id = Byte.toUnsignedInt(getBlock(x, y, z));
+
+        if (id == 0) return 0;
+        return 1;
+    }
+
+    private int getBlockLightValue(int blockId) {
+        return 0;
+    }
+
+
 
     public static Chunk fromPacketData(Packet51MapChunk packet) {
         if (packet == null) {

@@ -2,6 +2,7 @@ package ru.doh1221.wintymc.server.network.netty.tcp.handler;
 
 import ru.doh1221.wintymc.server.WintyMC;
 import ru.doh1221.wintymc.server.entity.Player;
+import ru.doh1221.wintymc.server.network.netty.tcp.ChannelWrapper;
 import ru.doh1221.wintymc.server.network.netty.tcp.ConnectionHandler;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.auth.Packet1Login;
 import ru.doh1221.wintymc.server.network.netty.tcp.packet.game.player.world.Packet11PlayerPosition;
@@ -19,6 +20,11 @@ public class InGameHandler extends ConnectionHandler {
 
     public InGameHandler(Player player) {
         this.player = player;
+    }
+
+    @Override
+    public void disconnected(ChannelWrapper channelWrapper) {
+        player.getChunkManager().clearAll();
     }
 
     @Override
@@ -52,7 +58,7 @@ public class InGameHandler extends ConnectionHandler {
 
         List<int[]> spiral = player.getChunkManager().spiralChunks(cx, cz, radius);
         for (int[] p : spiral) {
-            player.getChunkManager().requestChunkAsync(
+            player.getChunkManager().requestChunkSync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
@@ -89,7 +95,7 @@ public class InGameHandler extends ConnectionHandler {
 
         List<int[]> spiral = player.getChunkManager().spiralChunks(newCX, newCZ, radius);
         for (int[] p : spiral) {
-            player.getChunkManager().requestChunkAsync(
+            player.getChunkManager().requestChunkSync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
@@ -98,8 +104,8 @@ public class InGameHandler extends ConnectionHandler {
 
         List<Long> loaded = new ArrayList<>(player.getChunkManager().getLoadedChunks());
         for (long key : loaded) {
-            int cx = LongHash.msw(key);
-            int cz = LongHash.lsw(key);
+            int cx = LongHash.lsw(key);
+            int cz = LongHash.msw(key);
 
             if (Math.abs(cx - newCX) > radius ||
                     Math.abs(cz - newCZ) > radius) {

@@ -119,6 +119,8 @@ public class InitialHandler extends ConnectionHandler {
         // 3. Обновляем состояние игрока
         player.loadedChunks = newVisible;
 
+        player.damage(0.1);
+
     }
 
     @Override
@@ -217,12 +219,13 @@ public class InitialHandler extends ConnectionHandler {
         TestingWorld.world.spawnEntity(player);
 
         channel.write(new Packet3Chat("§e" + player.displayname + " joined the game"));
+
     }
 
     @Override
     public void handle(Packet2Handshake packet2Handshake) {
         channel.write(new Packet2Handshake("-"));
-        player = new Player();
+        player = new Player(this.channel);
         player.connection = channel;
         player.username = packet2Handshake.username;
         player.displayname = packet2Handshake.username;

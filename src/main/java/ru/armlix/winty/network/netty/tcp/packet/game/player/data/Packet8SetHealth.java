@@ -1,11 +1,13 @@
 package ru.armlix.winty.network.netty.tcp.packet.game.player.data;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
 import ru.armlix.winty.network.netty.tcp.packet.Packet;
 import ru.armlix.winty.network.netty.tcp.PacketHandler;
 
 import java.io.IOException;
 
+@AllArgsConstructor
 public class Packet8SetHealth extends Packet {
 
     public short currentHealth = 0;

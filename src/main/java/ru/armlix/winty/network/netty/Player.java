@@ -2,7 +2,7 @@ package ru.armlix.winty.network.netty;
 
 import lombok.Getter;
 import ru.armlix.winty.game.GameServer;
-import ru.armlix.winty.game.entiy.LivingEntity;
+import ru.armlix.winty.game.entiy.living.NetworkHumanEntity;
 import ru.armlix.winty.network.netty.tcp.ChannelWrapper;
 import ru.armlix.winty.utils.location.View3D;
 
@@ -11,10 +11,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Getter
-public class Player extends LivingEntity {
+public class Player extends NetworkHumanEntity {
 
-    public Player() {
-        super(GameServer.alloc);
+    public Player(ChannelWrapper channelWrapper) {
+        super(GameServer.alloc, channelWrapper);
     }
 
     public String username;

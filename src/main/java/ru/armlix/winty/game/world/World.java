@@ -41,7 +41,6 @@ public class World implements Tickable {
 
     @Override
     public void tick() {
-        // world time ticking
         timeCounter.increment(timeSpeedModifier);
 
         for (Entity entity : entities) {

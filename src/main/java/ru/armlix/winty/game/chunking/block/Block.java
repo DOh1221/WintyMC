@@ -7,13 +7,13 @@ import lombok.Getter;
 public class Block {
 
     @Getter
-    int blockID;
+    final int blockID;
     @Getter
-    int subID;
+    final int subID;
     @Getter
-    byte networkID;
+    final byte networkID;
     @Getter
-    String name;
+    final String name;
 
     // metadata
 

@@ -1,10 +1,13 @@
 package ru.armlix.winty.game.entiy;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.Getter;
 import lombok.Setter;
 import ru.armlix.winty.game.Tickable;
 
 import ru.armlix.winty.game.counters.TimeCounter;
+
+import java.util.List;
 
 public class Entity implements Tickable {
 
@@ -25,6 +28,8 @@ public class Entity implements Tickable {
     // GAME DATA
     @Getter
     protected final int entityID;
+    @Getter
+    protected List<Entity> observableEntities = new ObjectArrayList<>();
 
     public Entity(IDAllocator<Integer> alloc) {
         entityID = alloc.allocate();
@@ -41,5 +46,26 @@ public class Entity implements Tickable {
             timeCounter.increment(timeSpeedModifier);
         }
     }
+
+    public void addObservable(Entity entity) {
+        this.observableEntities.add(entity);
+    }
+
+    public void addObservable(long entityID) {
+        // TODO
+    }
+
+    public void removeObservable(Entity entity) {
+        this.observableEntities.remove(entity);
+    }
+
+    public void removeObservable(long entityID) {
+        // TODO
+    }
+
+    public void clearObservables() {
+        this.observableEntities.clear();
+    }
+
 
 }

@@ -8,6 +8,7 @@ import ru.armlix.winty.game.chunking.chunk.Chunk;
 import ru.armlix.winty.game.chunking.chunk.IChunkProvider;
 import ru.armlix.winty.game.counters.TimeCounter;
 import ru.armlix.winty.game.entiy.Entity;
+import ru.armlix.winty.utils.location.Location;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -33,10 +34,34 @@ public class World implements Tickable {
     }
 
     public void init() {
-        if(worldInfo.isPreloadSpawn()) {
-            // TODO preload spawn chunks
+        if (!worldInfo.isPreloadSpawn()) {
+            return;
         }
 
+        Location spawn = worldInfo.getSpawnLocation();
+
+        int spawnChunkX = spawn.getBlockX() >> 4;
+        int spawnChunkZ = spawn.getBlockZ() >> 4;
+
+        int radius = 4;
+
+        List<CompletableFuture<Chunk>> futures = new ObjectArrayList<>();
+
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+
+                if (dx * dx + dz * dz > radius * radius) {
+                    continue;
+                }
+
+                int cx = spawnChunkX + dx;
+                int cz = spawnChunkZ + dz;
+
+                futures.add(getChunkAt(cx, cz));
+            }
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     @Override
@@ -57,8 +82,9 @@ public class World implements Tickable {
         return getChunkProvider().getChunkAt(this.worldInfo, cx, cz);
     }
 
-    public boolean spawnEntity(Entity entity) {
+    public boolean spawnEntity(Entity entity, Location location) {
         entities.add(entity);
+        entity.setLocation(location);
         return true;
     }
 

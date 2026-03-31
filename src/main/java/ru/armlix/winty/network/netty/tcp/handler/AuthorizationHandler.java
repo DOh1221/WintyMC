@@ -1,4 +1,13 @@
 package ru.armlix.winty.network.netty.tcp.handler;
 
-public class AuthorizationHandler {
+import ru.armlix.winty.network.netty.tcp.ConnectionHandler;
+
+public class AuthorizationHandler extends ConnectionHandler {
+
+
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

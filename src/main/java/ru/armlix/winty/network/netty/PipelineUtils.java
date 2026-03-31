@@ -56,7 +56,6 @@ public class PipelineUtils {
             } catch (ChannelException ex) {
             }
 
-            // Добавляем обработчик Query (UDP)
             // ch.pipeline().addLast(PipelineUtils.DATAGRAM_QUERY_HANDLER, new QueryHandler(WintyMC.getInstance()));
         }
     }

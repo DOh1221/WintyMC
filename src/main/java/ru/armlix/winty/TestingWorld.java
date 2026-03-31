@@ -6,15 +6,20 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import ru.armlix.winty.game.DefaultItemsHolder;
 import ru.armlix.winty.game.chunking.chunk.IChunkPopulator;
 import ru.armlix.winty.game.chunking.chunk.IChunkProvider;
 import ru.armlix.winty.game.chunking.chunk.Chunk;
 import ru.armlix.winty.game.chunking.chunk.FlatMapGenerator;
 import ru.armlix.winty.game.chunking.chunk.FullWriterAsyncProvider;
 import ru.armlix.winty.game.chunking.chunk.FullWriterSyncProvider;
+import ru.armlix.winty.game.entiy.DroppedItemEntity;
+import ru.armlix.winty.game.entiy.NullAllocator;
+import ru.armlix.winty.game.items.ItemStack;
 import ru.armlix.winty.game.world.World;
 import ru.armlix.winty.game.world.WorldInfo;
 import ru.armlix.winty.network.netty.PipelineUtils;
+import ru.armlix.winty.utils.location.Location;
 
 import java.net.InetSocketAddress;
 import java.util.Locale;
@@ -35,11 +40,15 @@ public class TestingWorld {
             public void populateChunk(WorldInfo info, Chunk chunk) {
 
             }
-        });
+        }, new Location(null, 0, 0, 0, 0, 0));
 
-        world = new World(info, new FullWriterAsyncProvider(Executors.newFixedThreadPool(1)));
+        NullAllocator allocator = new NullAllocator();
+
+        world = new World(info, new FullWriterAsyncProvider(Executors.newFixedThreadPool(10)));
 
         world.init();
+
+        world.spawnEntity(new DroppedItemEntity(new ItemStack(DefaultItemsHolder.stone_item), allocator), new Location(world, 5, 3, 1, 0, 0));
 
         ThreadFactory threadFactory = new ThreadFactoryBuilder()
                 .setNameFormat("NETTY IO THREAD #%d")
@@ -59,7 +68,7 @@ public class TestingWorld {
                 System.out.println("Failed binding to bind address: " + future.cause().getMessage());
             }
         });
-
+        new TickingLoop(world).start();
 
         }
 

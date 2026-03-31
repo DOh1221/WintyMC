@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.armlix.winty.game.chunking.chunk.IChunkGenerator;
 import ru.armlix.winty.game.chunking.chunk.IChunkPopulator;
+import ru.armlix.winty.utils.location.Location;
 
 import java.util.UUID;
 
@@ -42,5 +43,8 @@ public class WorldInfo {
     @Getter
     @Setter
     private IChunkPopulator chunkPopulator;
+    @Getter
+    @Setter
+    Location spawnLocation;
 
 }

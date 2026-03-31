@@ -1,6 +1,7 @@
 package ru.armlix.winty.game.chunking.block;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import ru.armlix.winty.game.DefaultItemsHolder;
 
 public class BlockRegistry {
 
@@ -18,9 +19,9 @@ public class BlockRegistry {
     }
 
     static {
-        registerBlock(new Block(1, 0, (byte) 1,"stone"));
-        registerBlock(new Block(2, 0, (byte) 2,"grass"));
-        registerBlock(new Block(3, 0, (byte) 3,"dirt"));
+        registerBlock(DefaultItemsHolder.dirt);
+        registerBlock(DefaultItemsHolder.grass);
+        registerBlock(DefaultItemsHolder.stone);
     }
 
 }

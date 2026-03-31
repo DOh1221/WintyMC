@@ -1,17 +1,15 @@
 package ru.armlix.winty.game.chunking.chunk;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import ru.armlix.winty.game.world.WorldInfo;
 import ru.armlix.winty.utils.LongHash;
 
-import java.util.Iterator;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 public final class FullWriterAsyncProvider implements IChunkProvider {
 
-    private final Long2ObjectMap<CompletableFuture<Chunk>> chunks = new Long2ObjectOpenHashMap<>();
+    private final ConcurrentHashMap<Long, CompletableFuture<Chunk>> chunks = new ConcurrentHashMap<>();
     private final ExecutorService executor;
 
     public FullWriterAsyncProvider(ExecutorService executor) {
@@ -21,35 +19,39 @@ public final class FullWriterAsyncProvider implements IChunkProvider {
     @Override
     public CompletableFuture<Chunk> getChunkAt(WorldInfo info, int cx, int cz) {
         long key = LongHash.toLong(cx, cz);
-        CompletableFuture<Chunk> future = chunks.get(key);
-        if (future != null) return future;
 
-        CompletableFuture<Chunk> created = new CompletableFuture<>();
-        chunks.put(key, created);
+        return chunks.computeIfAbsent(key, k -> {
+            CompletableFuture<Chunk> future = new CompletableFuture<>();
 
-        executor.execute(() -> {
-            try {
-                Chunk chunk = info.getChunkGenerator().generateChunk(info, cx, cz);
-                info.getChunkPopulator().populateChunk(info, chunk);
-                created.complete(chunk);
-            } catch (Throwable t) {
-                created.completeExceptionally(t);
-            }
+            executor.execute(() -> {
+                try {
+                    Chunk chunk = info.getChunkGenerator().generateChunk(info, cx, cz);
+                    info.getChunkPopulator().populateChunk(info, chunk);
+                    chunk.markDirty();
+                    future.complete(chunk);
+                } catch (Throwable t) {
+                    chunks.remove(key, future);
+                    future.completeExceptionally(t);
+                }
+            });
+
+            return future;
         });
-
-        return created;
     }
 
     @Override
     public void tick() {
-        Iterator<Long2ObjectMap.Entry<CompletableFuture<Chunk>>> it = chunks.long2ObjectEntrySet().iterator();
-        while (it.hasNext()) {
-            Long2ObjectMap.Entry<CompletableFuture<Chunk>> e = it.next();
-            CompletableFuture<Chunk> f = e.getValue();
-            f.thenAccept(chunk -> {
-                if(chunk.getLastUpdated() - System.currentTimeMillis() > 5_000) chunks.remove(f);
-            });
-        }
-    }
+        long now = System.currentTimeMillis();
 
+        chunks.entrySet().removeIf(entry -> {
+            CompletableFuture<Chunk> future = entry.getValue();
+
+            if (!future.isDone()) return false;
+
+            Chunk chunk = future.getNow(null);
+            if (chunk == null) return true;
+
+            return now - chunk.getLastUpdated() > 5_000;
+        });
+    }
 }

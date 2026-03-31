@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import ru.armlix.winty.network.netty.tcp.PacketHandler;
-import ru.armlix.winty.utils.location.View3D;
+import ru.armlix.winty.utils.location.Location;
 
 @AllArgsConstructor
 public class Packet13PlayerPositionLook extends Packet10OnGround {
@@ -20,7 +20,7 @@ public class Packet13PlayerPositionLook extends Packet10OnGround {
 
     }
 
-    public Packet13PlayerPositionLook(View3D view) {
+    public Packet13PlayerPositionLook(Location view) {
         this.x = view.getX();
         this.y = view.getY();
         this.stance = 0.75;

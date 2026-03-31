@@ -17,12 +17,14 @@ import ru.armlix.winty.network.netty.tcp.packet.game.world.Packet51MapChunk;
 import ru.armlix.winty.network.netty.tcp.packet.game.world.Packet6SpawnPosition;
 import ru.armlix.winty.network.netty.tcp.packet.general.Packet255DisconnectKick;
 import ru.armlix.winty.network.netty.tcp.packet.status.Packet254GetInfo;
-import ru.armlix.winty.utils.location.View3D;
+import ru.armlix.winty.utils.location.Location;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import static ru.armlix.winty.TestingWorld.world;
 
 public class InitialHandler extends ConnectionHandler {
     // TEST IMPLEMENTATION
@@ -69,7 +71,7 @@ public class InitialHandler extends ConnectionHandler {
     public void handle(Packet13PlayerPositionLook pos) {
 
         if (this.player.position == null) {
-            this.player.position = new View3D(0, 100, 0, 0, 0);
+            this.player.position = new Location(world, 4, 90, 4, 0, 0);
             channel.write(new Packet13PlayerPositionLook(4, 90, 1.0, 4, 1, 1));
         }
 
@@ -126,7 +128,7 @@ public class InitialHandler extends ConnectionHandler {
     @Override
     public void handle(Packet11PlayerPosition pos) {
         if (this.player.position == null) {
-            this.player.position = new View3D(0, 100, 0, 0, 0);
+            this.player.position = new Location(world, 4, 90, 4, 0, 0);
             channel.write(new Packet13PlayerPositionLook(4, 90, 1.0, 4, 1, 1));
         }
 
@@ -179,32 +181,26 @@ public class InitialHandler extends ConnectionHandler {
 
     private void loadAndSendChunk(int cx, int cz) {
         World world = TestingWorld.world;
+        long key = Player.key(cx, cz);
 
-        CompletableFuture<Chunk> chunk = world.getChunkAt(cx, cz);
-
-        chunk.thenAccept(ch -> {
-            // 1. Packet50PreChunk (true = загружаем)
-            channel.write(new Packet50PreChunk(cx, cz, true));
-
-            // 2. Сам чанк
-            byte[] data = Chunk.toPacketData(ch).getRawData();
-
+        world.getChunkAt(cx, cz).thenAccept(ch -> {
+            // Компрессия в потоке генерации — это ок (теперь без static)
             Packet51MapChunk map = new Packet51MapChunk(
-                    cx * 16,
-                    0,
-                    cz * 16,
-                    16,
-                    128,
-                    16,
-                    data
+                    cx * 16, 0, cz * 16, 16, 128, 16,
+                    Chunk.toPacketData(ch).getRawData()
             );
+            map.compress(map);
 
-            Packet51MapChunk.compress(map);
-
-            channel.write(map);
+            // Запись в канал — через eventLoop для гарантии порядка
+            channel.ch.eventLoop().execute(() -> {
+                if (!channel.isClosed()) {
+                    channel.write(new Packet50PreChunk(cx, cz, true)); // сначала pre-chunk
+                    channel.write(map);                                  // потом данные
+                    // Только теперь помечаем как загруженный
+                    player.loadedChunks.add(key);
+                }
+            });
         });
-
-
     }
 
     @Override
@@ -212,11 +208,11 @@ public class InitialHandler extends ConnectionHandler {
         channel.write(new Packet1Login(player.getEntityID(), "CoolServer", 1851285L, (byte) 0));
         channel.write(new Packet6SpawnPosition(4, 80, 4));
 
-        channel.write(new Packet4WorldTime(TestingWorld.world.getTime()));
+        channel.write(new Packet4WorldTime(world.getTime()));
         channel.write(new Packet13PlayerPositionLook(4, 90, 1.0, 4, 1, 1));
-        channel.write(new Packet4WorldTime(TestingWorld.world.getTime()));
+        channel.write(new Packet4WorldTime(world.getTime()));
 
-        TestingWorld.world.spawnEntity(player);
+        world.spawnEntity(player, new Location(world, 4, 90, 4, 1, 1));
 
         channel.write(new Packet3Chat("§e" + player.displayname + " joined the game"));
 

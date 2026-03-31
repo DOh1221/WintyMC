@@ -4,7 +4,7 @@ import lombok.Getter;
 import ru.armlix.winty.game.GameServer;
 import ru.armlix.winty.game.entiy.living.NetworkHumanEntity;
 import ru.armlix.winty.network.netty.tcp.ChannelWrapper;
-import ru.armlix.winty.utils.location.View3D;
+import ru.armlix.winty.utils.location.Location;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +20,7 @@ public class Player extends NetworkHumanEntity {
     public String username;
     public UUID uuid;
     public String displayname;
-    public View3D position;
+    public Location position;
     public ChannelWrapper connection;
 
     public Set<Long> loadedChunks = new HashSet<>();

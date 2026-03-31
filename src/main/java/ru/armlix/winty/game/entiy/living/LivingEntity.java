@@ -9,8 +9,8 @@ public class LivingEntity extends Entity {
 
     private double currentHealth = 20.0;
     private double maxHealth = 20.0;
-    private double healthRestore = 0.0;
-    private long ticksPerHealthRestoring = -1;
+    private double healthRestore = 1.0;
+    private long ticksPerHealthRestoring = 100;
     private long ticksPassed = 0;
     private boolean dead = false;
 
@@ -28,12 +28,14 @@ public class LivingEntity extends Entity {
             ticksPassed = 0;
             return;
         }
-
-        if (ticksPerHealthRestoring > 0 && healthRestore > 0.0) {
-            ticksPassed += 1;
-            if (ticksPassed >= ticksPerHealthRestoring ) {
-                double newHealth = currentHealth + healthRestore;
-                currentHealth = Math.min(maxHealth, newHealth);
+        if(maxHealth > currentHealth) {
+            if (ticksPerHealthRestoring > 0 && healthRestore > 0.0) {
+                ticksPassed += 1;
+                if (ticksPassed >= ticksPerHealthRestoring) {
+                    ticksPassed = 0;
+                    double newHealth = Math.min(maxHealth, currentHealth + healthRestore);
+                    setHealth(Math.min(maxHealth, newHealth));
+                }
             }
         }
     }

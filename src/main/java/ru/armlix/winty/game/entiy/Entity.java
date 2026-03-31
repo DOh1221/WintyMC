@@ -6,6 +6,7 @@ import lombok.Setter;
 import ru.armlix.winty.game.Tickable;
 
 import ru.armlix.winty.game.counters.TimeCounter;
+import ru.armlix.winty.utils.location.Location;
 
 import java.util.List;
 
@@ -21,9 +22,14 @@ public class Entity implements Tickable {
     @Getter
     protected volatile long worldTime = 0;
     @Getter
-    protected volatile long time = 0;
+    protected volatile long previousTickEntityTime;
+    @Getter
+    protected volatile long entityTime = 0;
     @Getter
     protected volatile long lastTick = 0;
+    @Setter
+    @Getter
+    protected Location location;
 
     // GAME DATA
     @Getter
@@ -39,10 +45,11 @@ public class Entity implements Tickable {
     public void tick(long l) {
         lastTick = System.currentTimeMillis();
         worldTime = l;
+        previousTickEntityTime = entityTime;
         if (timeCounter == null) {
-            time = l;
+            entityTime = l;
         } else {
-            time = timeCounter.getTime();
+            entityTime = timeCounter.getTime();
             timeCounter.increment(timeSpeedModifier);
         }
     }

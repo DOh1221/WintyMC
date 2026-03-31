@@ -156,12 +156,10 @@ public class Chunk {
     }
 
     private void initBlockLight() {
-        // clear
         for (int i = 0; i < TOTAL_BLOCKS; i++) {
             blockLight.raw()[i >> 1] = 0;
         }
 
-        // sources
         for (int x = 0; x < SizeInfo.chunkSizeX; x++) {
             for (int z = 0; z < SizeInfo.chunkSizeZ; z++) {
                 for (int y = 0; y < SizeInfo.chunkSizeY; y++) {
@@ -223,7 +221,6 @@ public class Chunk {
     }
 
     public static Packet51MapChunk toPacketData(Chunk chunk) {
-        // total: TOTAL_BLOCKS + 3 * (TOTAL_BLOCKS / 2) = TOTAL_BLOCKS * 5 / 2
         int nibbleSize = TOTAL_BLOCKS / 2;
         int size = TOTAL_BLOCKS + 3 * nibbleSize;
         byte[] out = new byte[size];

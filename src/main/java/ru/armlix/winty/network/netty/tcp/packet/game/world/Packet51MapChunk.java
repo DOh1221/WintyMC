@@ -21,7 +21,7 @@ public class Packet51MapChunk extends Packet {
     private static final int DEFLATE_LEVEL_CHUNKS = 6;
     private static final int DEFLATE_LEVEL_PARTS = 1;
 
-    private static final Deflater DEFLATER = new Deflater();
+    private final Deflater DEFLATER = new Deflater();
     private static byte[] deflateBuffer = new byte[FULL_CHUNK_SIZE + 100];
 
     public int chunkX;
@@ -113,7 +113,7 @@ public class Packet51MapChunk extends Packet {
         return 17 + this.compressedSize;
     }
 
-    public static void compress(Packet51MapChunk packet) {
+    public void compress(Packet51MapChunk packet) {
 
         if (packet.compressedData != null) {
             return;

@@ -89,14 +89,14 @@ public class OverWorldGenerator implements IChunkProvider {
 
                                 if (k1 * 8 + l1 < b1) {
                                     if (d17 < 0.5D && k1 * 8 + l1 >= b1 - 1) {
-                                        l2 = BlockRegistry.getByBlockName("ice").getID();
+                                        l2 = 79;
                                     } else {
-                                        l2 = BlockRegistry.getByBlockName("stationary_water").getID();
+                                        l2 = 10;
                                     }
                                 }
 
                                 if (d15 > 0.0D) {
-                                    l2 = BlockRegistry.getByBlockName("stone").getID();
+                                    l2 = 1;
                                 }
 
                                 abyte[j2] = (byte) l2;
@@ -140,17 +140,17 @@ public class OverWorldGenerator implements IChunkProvider {
                     int l1 = (l * 16 + k) * 128 + k1;
 
                     if (k1 <= 0 + this.j.nextInt(5)) {
-                        abyte[l1] = (byte) BlockRegistry.getByBlockName("bedrock").getID();
+                        abyte[l1] = (byte) 7;
                     } else {
                         byte b3 = abyte[l1];
 
                         if (b3 == 0) {
                             j1 = -1;
-                        } else if (b3 == BlockRegistry.getByBlockName("stone").getID()) {
+                        } else if (b3 == 1) {
                             if (j1 == -1) {
                                 if (i1 <= 0) {
                                     b1 = 0;
-                                    b2 = (byte) BlockRegistry.getByBlockName("stone").getID();
+                                    b2 = (byte) 1;
                                 } else if (k1 >= b0 - 4 && k1 <= b0 + 1) {
                                     b1 = biomebase.p;
                                     b2 = biomebase.q;
@@ -159,20 +159,20 @@ public class OverWorldGenerator implements IChunkProvider {
                                     }
 
                                     if (flag1) {
-                                        b2 = (byte) BlockRegistry.getByBlockName("gravel").getID();
+                                        b2 = (byte) 13;
                                     }
 
                                     if (flag) {
-                                        b1 = (byte) BlockRegistry.getByBlockName("sand").getID();
+                                        b1 = (byte) 12;
                                     }
 
                                     if (flag) {
-                                        b2 = (byte) BlockRegistry.getByBlockName("sand").getID();
+                                        b2 = (byte) 12;
                                     }
                                 }
 
                                 if (k1 < b0 && b1 == 0) {
-                                    b1 = (byte) BlockRegistry.getByBlockName("stationary_water").getID();
+                                    b1 = (byte) 10;
                                 }
 
                                 j1 = i1;
@@ -184,7 +184,7 @@ public class OverWorldGenerator implements IChunkProvider {
                             } else if (j1 > 0) {
                                 --j1;
                                 abyte[l1] = b2;
-                                if (j1 == 0 && b2 == BlockRegistry.getByBlockName("sand").getID()) {
+                                if (j1 == 0 && b2 == 12) {
                                     j1 = this.j.nextInt(4);
                                     b2 = (byte) BlockRegistry.getByBlockName("sandstone").getID();
                                 }

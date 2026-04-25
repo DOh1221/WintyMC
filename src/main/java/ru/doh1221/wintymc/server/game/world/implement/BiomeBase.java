@@ -55,8 +55,8 @@ public class BiomeBase {
             }
         }
 
-        DESERT.p = DESERT.q = (byte) BlockRegistry.getByBlockName("sand").getID();
-        ICE_DESERT.p = ICE_DESERT.q = (byte) BlockRegistry.getByBlockName("sand").getID();
+        DESERT.p = DESERT.q = (byte) 12;
+        ICE_DESERT.p = ICE_DESERT.q = (byte) 12;
     }
 
     protected BiomeBase b() {

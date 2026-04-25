@@ -63,10 +63,10 @@ public class ChunkManager {
         if (!isChunkInView(cx, cz)) return;
 
         pendingChunks.add(key);
-        sendExecutor.execute(() -> {
+        /*sendExecutor.execute(() -> {
             player.connection.write(new Packet50PreChunk(cx, cz, true));
             sendChunkInternal(Chunk.empty(cx, cz));
-        });
+        });*/
 
         CompletableFuture<Chunk> future = CompletableFuture.supplyAsync(() -> world.getChunkProvider().getOrCreate(cx, cz), chunkIO);
 

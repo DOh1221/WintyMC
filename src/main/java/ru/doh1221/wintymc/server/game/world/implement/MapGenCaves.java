@@ -146,7 +146,7 @@ public class MapGenCaves extends MapGenBase {
                                                 flag3 = true;
                                             }
 
-                                            if (b0 == BlockRegistry.getByBlockName("stone").getID() || b0 == BlockRegistry.getByBlockName("dirt").getID() || b0 == BlockRegistry.getByBlockName("grass").getID()) {
+                                            if (b0 == 1 || b0 == BlockRegistry.getByBlockName("dirt").getID() || b0 == BlockRegistry.getByBlockName("grass").getID()) {
                                                 if (j4 < 10) {
                                                     abyte[i4] = (byte) BlockRegistry.getByBlockName("lava").getID();
                                                 } else {

@@ -45,7 +45,7 @@ public class WintyMC {
     PropertiesConfig config = null;
     private EventLoopGroup eventLoopGroup;
     @Getter
-    ExecutorService chunkIO = Executors.newFixedThreadPool(2);
+    ExecutorService chunkIO = Executors.newFixedThreadPool(1);
     @Getter
     private boolean starting = false; // TODO сделаю потом так чтобы при старте сервера, если игрок заходит, его кикало если он ещё полностью не запущен
 

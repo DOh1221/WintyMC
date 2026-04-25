@@ -1,6 +1,7 @@
 plugins {
     id("java")
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "ru.armlix"
@@ -34,6 +35,18 @@ dependencies {
 
     // Google Guava (для ThreadFactoryBuilder и других утилит)
     implementation("com.google.guava:guava:32.1.2-jre")
+}
+
+
+
+tasks.shadowJar {
+    archiveBaseName.set("WintyMC")
+    archiveVersion.set("1.0")
+    archiveClassifier.set("") // ← убирает "-all"
+
+    manifest {
+        attributes["Main-Class"] = "ru.doh1221.wintymc.server.WintyMC"
+    }
 }
 
 tasks.test {

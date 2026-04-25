@@ -58,7 +58,7 @@ public class InGameHandler extends ConnectionHandler {
 
         List<int[]> spiral = player.getChunkManager().spiralChunks(cx, cz, radius);
         for (int[] p : spiral) {
-            player.getChunkManager().requestChunkSync(
+            player.getChunkManager().requestChunkAsync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
@@ -95,7 +95,7 @@ public class InGameHandler extends ConnectionHandler {
 
         List<int[]> spiral = player.getChunkManager().spiralChunks(newCX, newCZ, radius);
         for (int[] p : spiral) {
-            player.getChunkManager().requestChunkSync(
+            player.getChunkManager().requestChunkAsync(
                     WintyMC.getInstance().world,
                     p[0],
                     p[1]
